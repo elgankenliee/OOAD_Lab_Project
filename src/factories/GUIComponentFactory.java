@@ -1,6 +1,7 @@
 package factories;
 
 import client.Main;
+import controller.ItemController;
 import controller.UserController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,6 +13,8 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
@@ -21,8 +24,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -150,7 +151,7 @@ public class GUIComponentFactory {
 			UserController.login(primaryStage, nameField.getText(), passField.getText());
 		});
 
-		loginWindow.getChildren().addAll(titleLabel, divider, createLabel("Email", 14), nameField,
+		loginWindow.getChildren().addAll(titleLabel, divider, createLabel("Username", 14), nameField,
 				createLabel("Password", 14), passField, loginButton, linkContainer);
 
 		loginWindow.setTranslateY(-60);
@@ -160,6 +161,8 @@ public class GUIComponentFactory {
 				UserController.login(primaryStage, nameField.getText(), passField.getText());
 			}
 		});
+
+		nameField.setText("elgankenlie");
 
 		return loginWindow;
 	}
@@ -188,11 +191,7 @@ public class GUIComponentFactory {
 		return titleContainer;
 	}
 
-	public static VBox createNavbar(Stage primaryStage, String searchBarText) {
-
-		LinearGradient navbarGradient = new LinearGradient(0, 0, 1, 0, true, javafx.scene.paint.CycleMethod.REFLECT,
-				new Stop(1, Color.web("#3D3F56")), new Stop(0, Color.web("#33333B")));
-		Background navbarBg = new Background(new BackgroundFill(navbarGradient, CornerRadii.EMPTY, Insets.EMPTY));
+	public static VBox createNavbar(Stage primaryStage, String placeholder) {
 
 		VBox navbarContainer = new VBox();
 		navbarContainer.setAlignment(Pos.BOTTOM_CENTER);
@@ -205,13 +204,11 @@ public class GUIComponentFactory {
 		HBox navbar = new HBox();
 		navbar.setAlignment(Pos.CENTER_LEFT);
 		navbar.setSpacing(80);
-//		navbar.setBackground(Main.defaultBg);
 		navbar.setMaxWidth(Main.viewPortWidth - 400);
 		navbar.setMinHeight(navbarHeight);
 		navbar.setStyle("-fx-background-radius : 60; -fx-background-color:" + Main.navbarGrey + "");
-//		navbar.setBackground(navbarBg);
 
-		TextField searchBar = new TextField(searchBarText);
+		TextField searchBar = new TextField(placeholder);
 		double searchBarHeight = 40;
 		searchBar.setMinWidth(Main.viewPortWidth / 2.3);
 		searchBar.setMinHeight(searchBarHeight);
@@ -220,7 +217,7 @@ public class GUIComponentFactory {
 
 		Button searchButton = createNavbarButton("Search");
 		searchButton.setOnAction(e -> {
-//			CustomerDashboardPage.initCustomerDashboard(primaryStage, searchBar.getText(), searchBar.getText());
+			ItemController.browseItem(primaryStage, searchBar.getText(), searchBar.getText());
 		});
 		searchButton.setStyle(
 				"-fx-background-color: #7278B2; -fx-text-fill: #F3F3F3; -fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family : helvetica");
@@ -241,13 +238,13 @@ public class GUIComponentFactory {
 
 		navbarContainer.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
-//				CustomerDashboardPage.initCustomerDashboard(primaryStage, searchBar.getText(), searchBar.getText());
+				ItemController.browseItem(primaryStage, searchBar.getText(), searchBar.getText());
 			}
 		});
 
 		VBox navbarLogo = createNavbarLogo();
 		navbarLogo.setOnMouseClicked(e -> {
-//			CustomerDashboardPage.initCustomerDashboard(primaryStage, "", "Search Items in GoGoQuery Store");
+			ItemController.browseItem(primaryStage, "", Main.defaultPlaceholder);
 		});
 
 		HBox leftNavbarContents = new HBox();
@@ -264,7 +261,7 @@ public class GUIComponentFactory {
 		Rectangle divider = new Rectangle(2, 0.7 * navbarHeight);
 		divider.setFill(Color.web("#545877"));
 
-		Button cartButton = createNavbarButton("My Cart");
+		Button cartButton = createNavbarButton("My Wishlist");
 		cartButton.setMinHeight(searchBarHeight);
 		cartButton.setOnAction(e -> {
 //			CustomerCartPage.initCustomerCart(primaryStage, "", "Search Items in GoGoQuery Store");
@@ -285,7 +282,7 @@ public class GUIComponentFactory {
 		});
 
 		logoutButton.setOnAction(e -> {
-//			LoginPage.initLoginPage(primaryStage);
+			UserController.logout(primaryStage);
 		});
 
 		rightNavbarContents.getChildren().addAll(divider, cartButton, logoutButton);
@@ -330,8 +327,8 @@ public class GUIComponentFactory {
 	}
 
 	public static VBox createNavbarLogo() {
-		Label title = new Label("Go Go");
-		Label titleAccent = new Label("Query");
+		Label title = new Label("CaLouselF");
+		Label titleAccent = new Label("Store");
 		title.setStyle("-fx-text-fill: white	;-fx-font-size:30px; -fx-font-weight:bold; -fx-font-style: italic;");
 		titleAccent.setStyle("-fx-text-fill: " + Main.themeOrange
 				+ ";-fx-font-size:45px; -fx-font-weight:bold; -fx-font-style: italic;");
@@ -353,6 +350,14 @@ public class GUIComponentFactory {
 		return alert;
 	}
 
+	public static Alert createNotification(String title, String header, String content) {
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle(title);
+		alert.setHeaderText(header);
+		alert.setContentText(content);
+		return alert;
+	}
+
 	public static Label createSrchMsgLbl(String message, String color) {
 		Label resultMsgLabel = new Label(message);
 
@@ -362,14 +367,14 @@ public class GUIComponentFactory {
 		return resultMsgLabel;
 	}
 
-	public static VBox createDashboardItemBox(Stage primaryStage, Item item) {
+	public static VBox createHomePageItemCard(Stage primaryStage, Item item) {
 		VBox itemBox = new VBox();
 		itemBox.setAlignment(Pos.CENTER);
 		itemBox.setBackground(new Background(new BackgroundFill(Color.web(Main.navbarGrey), null, null)));
 		itemBox.setMaxWidth(700);
 		itemBox.setMinHeight(170);
 		itemBox.setOnMouseClicked(e -> {
-//			ItemDetailPage.initCustomerItemDetailPage(primaryStage, item);
+			ItemController.viewDetail(primaryStage, item);
 		});
 
 		itemBox.setOnMouseEntered(e -> {
@@ -393,40 +398,59 @@ public class GUIComponentFactory {
 		itemDetail.setMinWidth(500);
 		itemDetail.setMaxWidth(500);
 
-		VBox titleContainer = new VBox();
+		HBox titleContainer = new HBox();
 		titleContainer.setMinHeight(itemDetailHeight * 0.5);
-//		titleContainer.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 		titleContainer.setAlignment(Pos.CENTER_LEFT);
 
-		Label itemTitle = new Label(item.getItemName());
-		itemTitle.setWrapText(true);
-		itemTitle.setPrefWidth(450);
-		itemTitle.setFont(Font.font("Helvetica", FontWeight.BOLD, 23));
-		itemTitle.setTextFill(Color.web(Main.themeWhite));
+		Label itemTitleLabel = new Label(item.getItemName());
+		itemTitleLabel.setWrapText(true);
+//		itemTitleLabel.setPrefWidth(450);
+		itemTitleLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 23));
+		itemTitleLabel.setTextFill(Color.web(Main.themeWhite));
 
-		titleContainer.getChildren().addAll(itemTitle);
+		Label itemSizeLabel = new Label(" (" + item.getItemSize() + ")");
+		itemSizeLabel.setWrapText(true);
+//		itemSizeLabel.setPrefWidth(450);
+		itemSizeLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 23));
+		itemSizeLabel.setTextFill(Color.web(Main.themeOrange));
 
-		HBox priceStockContainer = new HBox();
-		priceStockContainer.setAlignment(Pos.CENTER_LEFT);
-		priceStockContainer.setSpacing(10);
+		titleContainer.getChildren().addAll(itemTitleLabel, itemSizeLabel);
 
-		Label itemPriceLabel = new Label("$" + item.getItemPrice());
-		itemPriceLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 30));
-		itemPriceLabel.setTextFill(Color.web(Main.themeOrange));
+		HBox priceCategoryContainer = new HBox();
+		priceCategoryContainer.setAlignment(Pos.CENTER_LEFT);
+		priceCategoryContainer.setSpacing(10);
 
-		Button stockLeftLabel = new Button("999 Left");
+		Label itemCategoryLabel = new Label("¥" + item.getItemPrice());
+		itemCategoryLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 30));
+		itemCategoryLabel.setTextFill(Color.web(Main.themeOrange));
+
+		Button stockLeftLabel = new Button(item.getItemCategory());
 		stockLeftLabel.setMinHeight(20);
 		stockLeftLabel.setMinWidth(50);
 		stockLeftLabel.setStyle(
 				"-fx-background-color : #ff2121; -fx-font-family : Helvetica; -fx-font-weight : bold; -fx-font-size : 15px; -fx-text-fill : white");
 
-		priceStockContainer.getChildren().addAll(itemPriceLabel, stockLeftLabel);
+		priceCategoryContainer.getChildren().addAll(itemCategoryLabel, stockLeftLabel);
 
-		itemDetail.getChildren().addAll(titleContainer, priceStockContainer);
+		itemDetail.getChildren().addAll(titleContainer, priceCategoryContainer);
 
 		content.getChildren().addAll(picture, itemDetail);
 		itemBox.getChildren().addAll(content);
 		return itemBox;
+	}
+
+	public static Spinner createSpinner(int minVal, int maxVal, int initVal) {
+		Spinner<Integer> qtySpinner = new Spinner<>();
+		SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(minVal, maxVal,
+				initVal);
+		qtySpinner.setValueFactory(valueFactory);
+		qtySpinner.setPrefWidth(100);
+		qtySpinner.setPrefHeight(26);
+
+		qtySpinner.setStyle(
+				"-fx-background-color : #545877; -fx-text-fill : #F3F3F3; -fx-font-weight : bold; -fx-font-size : 14px");
+
+		return qtySpinner;
 	}
 
 }

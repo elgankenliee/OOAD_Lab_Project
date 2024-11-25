@@ -20,8 +20,6 @@ public class LoginPage {
 
 		parentContainer.getChildren().addAll(titleContainer, GUIComponentFactory.createLoginForm(primaryStage));
 
-//		Scene scene = new Scene(parentContainer, viewPortWidth, viewPortHeight);
-
 		primaryStage.getScene().setRoot(parentContainer);
 		primaryStage.show();
 

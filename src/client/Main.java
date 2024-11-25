@@ -21,6 +21,7 @@ public class Main extends Application {
 	public static int viewPortWidth = 1920;
 	public static int contentWidth = viewPortWidth - 400;
 	public static int tempScreenMinHeight = 1500;
+	public static String defaultPlaceholder = "Search Items in CaLouselF Store";
 
 	public static String themeOrange = "#FF9C24";
 	public static String themeWhite = "#F3F3F3";
@@ -49,7 +50,7 @@ public class Main extends Application {
 
 		primaryStage.setTitle("CaLouselF");
 		primaryStage.setScene(new Scene(new VBox(), viewPortWidth, viewPortHeight));
-		Route.redirectRegisterPage(primaryStage);
+		Route.redirectLoginPage(primaryStage);
 	}
 
 }

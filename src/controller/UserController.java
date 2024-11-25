@@ -9,6 +9,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Toggle;
 import javafx.stage.Stage;
 import model.User;
+import routes.Route;
 import util.AESHelper;
 import util.Connect;
 
@@ -20,6 +21,19 @@ public class UserController {
 
 	public UserController() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public static String getSellerName(int sellerID) {
+		String query = "SELECT Username FROM Users WHERE UserID = " + sellerID + ";";
+		db.rs = db.execQuery(query);
+		try {
+			if (db.rs.next()) {
+				return db.rs.getString("Username");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "anonymous";
 	}
 
 	public static boolean checkCredentials(String username, String password) {
@@ -72,6 +86,12 @@ public class UserController {
 		return true;
 	}
 
+	public static void logout(Stage primaryStage) {
+		Main.currentUser = null;
+		loggedInAsBuyer = loggedInAsSeller = false;
+		Route.redirectLoginPage(primaryStage);
+	}
+
 	public static void login(Stage primaryStage, String username, String password) {
 
 		if (username.equals("") || password.equals("")) {
@@ -97,7 +117,7 @@ public class UserController {
 		}
 
 		if (loggedInAsBuyer) {
-//			BuyerDashboardPage.initBuyerDashboard(primaryStage, "", "Search Items in CaLouselF Store");
+			Route.redirectBuyerHomePage(primaryStage, "", Main.defaultPlaceholder);
 		} else if (loggedInAsSeller) {
 //			SellerHomePage.initSellerHome();
 		}

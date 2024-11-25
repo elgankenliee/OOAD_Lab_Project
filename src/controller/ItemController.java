@@ -1,23 +1,26 @@
 package controller;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 
-import client.Main;
-import factories.GUIComponentFactory;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Item;
 import util.Connect;
+import view.BuyerHomePage;
+import view.ItemDetailPage;
 
 public class ItemController {
 	private static Connect db = Connect.getInstance();
 
-	public static ArrayList<Item> fetchItem() {
-
-		ArrayList<Item> itemList = new ArrayList<>();
-		String query = "SELECT * FROM Items WHERE Status LIKE 'approved' ORDER BY ItemID DESC";
+	public static void browseItem(Stage primaryStage, String searchedItemName, String placeholder) {
+		BuyerHomePage.itemList.clear();
+		String query = null;
+		if (searchedItemName == "") {
+			BuyerHomePage.categoryList.clear();
+			query = "SELECT * FROM Items WHERE ItemStatus LIKE 'approved' ORDER BY ItemID DESC";
+		} else {
+			query = "SELECT * FROM Items WHERE ItemStatus LIKE 'approved' AND ItemName LIKE '%" + searchedItemName
+					+ "%' OR ItemCategory LIKE '%" + searchedItemName + "%' ORDER BY ItemID DESC";
+		}
 		db.rs = db.execQuery(query);
 		try {
 			while (db.rs.next()) {
@@ -31,71 +34,25 @@ public class ItemController {
 				String dbItemStatus = db.rs.getString("ItemStatus");
 				String dbItemWishList = db.rs.getString("ItemWishlist");
 				String dbItemOfferStatus = db.rs.getString("ItemOfferStatus");
-				itemList.add(new Item(dbItemID, dbSellerID, dbItemName, dbItemSize, dbItemPrice, dbItemCategory,
-						dbItemStatus, dbItemWishList, dbItemOfferStatus));
-
-//				itemList.add(new Item(itemID, itemName, itemPrice, itemDesc, itemStock));
+				BuyerHomePage.itemList.add(new Item(dbItemID, dbSellerID, dbItemName, dbItemSize, dbItemPrice,
+						dbItemCategory, dbItemStatus, dbItemWishList, dbItemOfferStatus));
+				if (searchedItemName == "") {
+					if (!BuyerHomePage.categoryList.contains(dbItemCategory.toLowerCase())) {
+						BuyerHomePage.categoryList.add(dbItemCategory.toLowerCase());
+					}
+				}
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-//		for (String str : CustomerDashboardPage.categoryList) {
-//			System.out.println(str);
-//		}
-
-		return itemList;
+		BuyerHomePage.initBuyerHomePage(primaryStage, searchedItemName, placeholder);
 	}
 
-	public static VBox browseItem(Stage primaryStage, String searchedString) {
-		ArrayList<Item> itemList = fetchItem();
-		VBox itemContainer = new VBox();
-		itemContainer.setSpacing(20);
-		int minBoxHeight = 1500;
+	public static void viewDetail(Stage primaryStage, Item item) {
 
-		HBox resultMsgContainer = new HBox();
+		ItemDetailPage.initCustomerItemDetailPage(primaryStage, item);
 
-		if (searchedString.isEmpty()) {
-
-			resultMsgContainer.getChildren().addAll(GUIComponentFactory.createSrchMsgLbl("Showing ", "#717489"),
-					GUIComponentFactory.createSrchMsgLbl(Integer.toString(itemList.size()), Main.themeOrange),
-					GUIComponentFactory.createSrchMsgLbl(" products", "#717489"));
-			itemContainer.getChildren().add(resultMsgContainer);
-
-			for (Item item : itemList) {
-				minBoxHeight += 200;
-				itemContainer.getChildren().add(GUIComponentFactory.createDashboardItemBox(primaryStage, item));
-			}
-		} else {
-			ArrayList<Item> suggestedItems = new ArrayList<>();
-
-			searchedString = searchedString.toLowerCase();
-			for (Item item : itemList) {
-				if (item.getItemName().toLowerCase().contains(searchedString)
-						|| item.getItemCategory().toLowerCase().contains(searchedString)
-						|| searchedString.contains(item.getItemName().toLowerCase())
-						|| searchedString.contains(item.getItemCategory().toLowerCase())) {
-					suggestedItems.add(item);
-				}
-			}
-
-			resultMsgContainer.getChildren().addAll(GUIComponentFactory.createSrchMsgLbl("Showing ", "#717489"),
-					GUIComponentFactory.createSrchMsgLbl(Integer.toString(suggestedItems.size()), Main.themeOrange),
-					GUIComponentFactory.createSrchMsgLbl(" products for ", "#717489"),
-					GUIComponentFactory.createSrchMsgLbl("'" + searchedString + "'", Main.themeOrange));
-			itemContainer.getChildren().add(resultMsgContainer);
-
-			for (Item item : suggestedItems) {
-				itemContainer.getChildren().add(GUIComponentFactory.createDashboardItemBox(primaryStage, item));
-			}
-			if (suggestedItems.size() > 5) {
-				minBoxHeight += (suggestedItems.size() - 5) * 170;
-			}
-
-		}
-		Main.tempScreenMinHeight = minBoxHeight;
-		return itemContainer;
 	}
 
 }

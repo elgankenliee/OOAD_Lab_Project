@@ -60,7 +60,7 @@ public class Item {
 	}
 
 	public double getItemPrice() {
-		return itemPrice;
+		return (int) Math.round(itemPrice);
 	}
 
 	public void setItemPrice(double itemPrice) {

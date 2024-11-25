@@ -20,12 +20,15 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import model.Item;
 
 public class BuyerHomePage {
 
 	public static ArrayList<String> categoryList = new ArrayList<>();
+	public static ArrayList<Item> itemList = new ArrayList<>();
 
-	public static void initCustomerDashboard(Stage primaryStage, String itemName, String searchBarText) {
+	public static void initBuyerHomePage(Stage primaryStage, String itemName, String searchBarText) {
+
 		VBox screen = new VBox();
 		screen.setBackground(Main.defaultBg);
 		screen.setSpacing(20);
@@ -37,9 +40,7 @@ public class BuyerHomePage {
 		welcomeMessageContainer.setTranslateY(97);
 		Label welcomeLabel = new Label("Welcome, ");
 
-		String currUsername = Main.currentUser.getUsername();
-		Main.currentUsername = currUsername.substring(0, currUsername.length() - 11);
-		Label customerNameLabel = new Label(Main.currentUsername);
+		Label customerNameLabel = new Label(Main.currentUser.getUsername());
 
 		welcomeLabel.setFont(Font.font("Helvetica", FontWeight.NORMAL, FontPosture.ITALIC, 90));
 		welcomeLabel.setTextFill(Color.WHITE);
@@ -57,7 +58,6 @@ public class BuyerHomePage {
 		content.setMaxWidth(Main.contentWidth);
 		content.setAlignment(Pos.TOP_CENTER);
 		content.setMinWidth(Main.contentWidth);
-//		content.setSpacing(20);
 		content.setTranslateX(80);
 		content.setTranslateY(120);
 
@@ -97,7 +97,26 @@ public class BuyerHomePage {
 		screen.getChildren().addAll(GUIComponentFactory.createNavbar(primaryStage, searchBarText),
 				welcomeMessageContainer, content);
 
-		rightContent.getChildren().add(ItemController.browseItem(primaryStage, itemName));
+		VBox itemContainer = new VBox();
+		itemContainer.setSpacing(20);
+		int minBoxHeight = 1500;
+
+		HBox resultMsgContainer = new HBox();
+
+		if (!itemList.isEmpty()) {
+
+			resultMsgContainer.getChildren().addAll(GUIComponentFactory.createSrchMsgLbl("Showing ", "#717489"),
+					GUIComponentFactory.createSrchMsgLbl(Integer.toString(itemList.size()), Main.themeOrange),
+					GUIComponentFactory.createSrchMsgLbl(" products", "#717489"));
+			itemContainer.getChildren().add(resultMsgContainer);
+
+			for (Item item : itemList) {
+				minBoxHeight += 200;
+				itemContainer.getChildren().add(GUIComponentFactory.createHomePageItemCard(primaryStage, item));
+			}
+		}
+
+		rightContent.getChildren().add(itemContainer);
 
 		ScrollPane scrollPane = new ScrollPane();
 
@@ -136,7 +155,7 @@ public class BuyerHomePage {
 
 		Button applyFilterButton = GUIComponentFactory.createButton("Apply");
 		applyFilterButton.setOnAction(e -> {
-			initCustomerDashboard(primaryStage, categoryBox.getValue().getText(), "Search Items in GoGoQuery Store");
+			ItemController.browseItem(primaryStage, categoryBox.getValue().getText(), Main.defaultPlaceholder);
 		});
 
 		filterContainer.getChildren().addAll(categoryBox, applyFilterButton);
