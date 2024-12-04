@@ -7,7 +7,9 @@ import factories.GUIComponentFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -155,7 +157,15 @@ public class ItemDetailPage {
 		buyNowButton.setMinWidth(qtySelectorWidth * 0.45);
 		buyNowButton.setTranslateY(23);
 		buyNowButton.setOnAction(e -> {
-//			CartHandler.addToCart(item, qtySpinner.getValue());
+			Alert confirmation = GUIComponentFactory.createConfirmation("Confirmation", "Buy this item now?",
+					"*You will be charged 10 times the highest bid");
+			confirmation.showAndWait().ifPresent(response -> {
+				if (response == ButtonType.OK) {
+					Alert notification = GUIComponentFactory.createNotification("Notification", "Transaction created!",
+							"Please track your shipping progress regularly");
+					notification.showAndWait();
+				}
+			});
 		});
 
 		Button bidButton = GUIComponentFactory.createButton("Place Bid");
@@ -180,7 +190,7 @@ public class ItemDetailPage {
 		middleContent.getChildren().addAll(topMiddleContent, bottomMiddleContent);
 		leftContent.getChildren().addAll(picture);
 		content.getChildren().addAll(leftContent, middleContent, rightContent);
-		screen.getChildren().addAll(GUIComponentFactory.createNavbar(primaryStage, "Search Items in GoGoQuery Store"),
+		screen.getChildren().addAll(GUIComponentFactory.createNavbar(primaryStage, "Search Items in CaLouselF Store"),
 				content);
 
 		Scene scene = new Scene(screen, Main.viewPortWidth, Main.viewPortHeight);

@@ -3,7 +3,6 @@ package view;
 import java.util.ArrayList;
 
 import client.Main;
-import controller.ItemController;
 import factories.GUIComponentFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,12 +14,12 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import model.Item;
+import routes.Route;
 
 public class BuyerHomePage {
 
@@ -82,8 +81,6 @@ public class BuyerHomePage {
 		filterByCategoryLabel.setFont(Font.font("Calibri", FontWeight.BOLD, 20));
 		filterByCategoryLabel.setTextFill(Color.web("#717489"));
 
-		Rectangle divider = new Rectangle(150, 2, Color.web("9598b5"));
-
 		leftContent.getChildren().addAll(filterLabel, filterBox);
 
 		VBox rightContent = new VBox();
@@ -103,12 +100,12 @@ public class BuyerHomePage {
 
 		HBox resultMsgContainer = new HBox();
 
-		if (!itemList.isEmpty()) {
+		resultMsgContainer.getChildren().addAll(GUIComponentFactory.createSrchMsgLbl("Showing ", "#717489"),
+				GUIComponentFactory.createSrchMsgLbl(Integer.toString(itemList.size()), Main.themeOrange),
+				GUIComponentFactory.createSrchMsgLbl(" products", "#717489"));
+		itemContainer.getChildren().add(resultMsgContainer);
 
-			resultMsgContainer.getChildren().addAll(GUIComponentFactory.createSrchMsgLbl("Showing ", "#717489"),
-					GUIComponentFactory.createSrchMsgLbl(Integer.toString(itemList.size()), Main.themeOrange),
-					GUIComponentFactory.createSrchMsgLbl(" products", "#717489"));
-			itemContainer.getChildren().add(resultMsgContainer);
+		if (!itemList.isEmpty()) {
 
 			for (Item item : itemList) {
 				minBoxHeight += 200;
@@ -155,7 +152,7 @@ public class BuyerHomePage {
 
 		Button applyFilterButton = GUIComponentFactory.createButton("Apply");
 		applyFilterButton.setOnAction(e -> {
-			ItemController.browseItem(primaryStage, categoryBox.getValue().getText(), Main.defaultPlaceholder);
+			Route.redirectBuyerHomePage(primaryStage, categoryBox.getValue().getText(), Main.defaultPlaceholder);
 		});
 
 		filterContainer.getChildren().addAll(categoryBox, applyFilterButton);

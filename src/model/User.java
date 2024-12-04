@@ -2,14 +2,14 @@ package model;
 
 public class User {
 
-	private int userID;
+	private String userID;
 	private String username;
 	private String userPassword;
 	private String userPhone;
 	private String userAddress;
 	private String userRole;
 
-	public User(int userID, String username, String userPassword, String userPhone, String userAddress,
+	public User(String userID, String username, String userPassword, String userPhone, String userAddress,
 			String userRole) {
 		super();
 		this.userID = userID;
@@ -20,11 +20,11 @@ public class User {
 		this.userRole = userRole;
 	}
 
-	public int getUserID() {
+	public String getUserID() {
 		return userID;
 	}
 
-	public void setUserID(int userID) {
+	public void setUserID(String userID) {
 		this.userID = userID;
 	}
 

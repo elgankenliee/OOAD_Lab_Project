@@ -46,7 +46,6 @@ public class ItemController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		BuyerHomePage.initBuyerHomePage(primaryStage, searchedItemName, placeholder);
 	}
 
 	public static void viewDetail(Stage primaryStage, Item item) {

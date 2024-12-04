@@ -51,7 +51,8 @@ public class UserController {
 				String userRole = db.rs.getString("Role");
 
 				if (dbPassword.equals(AESHelper.encrypt(password, Main.AESencryptionKey))) {
-					User user = new User(userID, dbUsername, dbPassword, userPhone, userAddress, userRole);
+					User user = new User(String.valueOf(userID), dbUsername, dbPassword, userPhone, userAddress,
+							userRole);
 
 					if (user.getUserRole().equalsIgnoreCase("seller")) {
 						loggedInAsSeller = true;

@@ -16,7 +16,6 @@ import routes.Route;
 
 public class Main extends Application {
 	public static User currentUser = null;
-	public static String currentUsername = null;
 	public static int viewPortHeight = 1000;
 	public static int viewPortWidth = 1920;
 	public static int contentWidth = viewPortWidth - 400;

@@ -1,22 +1,22 @@
 package model;
 
 public class Wishlist {
-	private int wishlistID;
+	private String wishlistID;
 	private int itemID;
 	private int buyerID;
 
-	public Wishlist(int wishlistID, int itemID, int buyerID) {
+	public Wishlist(String wishlistID, int itemID, int buyerID) {
 		super();
 		this.wishlistID = wishlistID;
 		this.itemID = itemID;
 		this.buyerID = buyerID;
 	}
 
-	public int getWishlistID() {
+	public String getWishlistID() {
 		return wishlistID;
 	}
 
-	public void setWishlistID(int wishlistID) {
+	void setWishlistID(String wishlistID) {
 		this.wishlistID = wishlistID;
 	}
 

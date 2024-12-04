@@ -1,18 +1,23 @@
 package factories;
 
+import java.util.Optional;
+
 import client.Main;
 import controller.ItemController;
 import controller.UserController;
+import controller.WishlistController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
@@ -30,6 +35,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import model.Item;
 import routes.Route;
+import view.ItemDetailPage;
 
 public class GUIComponentFactory {
 
@@ -217,7 +223,7 @@ public class GUIComponentFactory {
 
 		Button searchButton = createNavbarButton("Search");
 		searchButton.setOnAction(e -> {
-			ItemController.browseItem(primaryStage, searchBar.getText(), searchBar.getText());
+			Route.redirectBuyerHomePage(primaryStage, searchBar.getText(), searchBar.getText());
 		});
 		searchButton.setStyle(
 				"-fx-background-color: #7278B2; -fx-text-fill: #F3F3F3; -fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family : helvetica");
@@ -244,7 +250,7 @@ public class GUIComponentFactory {
 
 		VBox navbarLogo = createNavbarLogo();
 		navbarLogo.setOnMouseClicked(e -> {
-			ItemController.browseItem(primaryStage, "", Main.defaultPlaceholder);
+			Route.redirectBuyerHomePage(primaryStage, "", Main.defaultPlaceholder);
 		});
 
 		HBox leftNavbarContents = new HBox();
@@ -261,10 +267,10 @@ public class GUIComponentFactory {
 		Rectangle divider = new Rectangle(2, 0.7 * navbarHeight);
 		divider.setFill(Color.web("#545877"));
 
-		Button cartButton = createNavbarButton("My Wishlist");
-		cartButton.setMinHeight(searchBarHeight);
-		cartButton.setOnAction(e -> {
-//			CustomerCartPage.initCustomerCart(primaryStage, "", "Search Items in GoGoQuery Store");
+		Button wishlistButton = createNavbarButton("My Wishlist");
+		wishlistButton.setMinHeight(searchBarHeight);
+		wishlistButton.setOnAction(e -> {
+			WishlistController.initWishlist(primaryStage, "", "Search Items in CaLouselF Store");
 		});
 
 		Button logoutButton = createButton("Log Out");
@@ -285,7 +291,7 @@ public class GUIComponentFactory {
 			UserController.logout(primaryStage);
 		});
 
-		rightNavbarContents.getChildren().addAll(divider, cartButton, logoutButton);
+		rightNavbarContents.getChildren().addAll(divider, wishlistButton, logoutButton);
 
 		navbar.getChildren().addAll(leftNavbarContents, rightNavbarContents);
 		navbarContainer.getChildren().addAll(navbar);
@@ -358,6 +364,14 @@ public class GUIComponentFactory {
 		return alert;
 	}
 
+	public static Alert createConfirmation(String title, String header, String content) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle(title);
+		alert.setHeaderText(header);
+		alert.setContentText(content);
+		return alert;
+	}
+
 	public static Label createSrchMsgLbl(String message, String color) {
 		Label resultMsgLabel = new Label(message);
 
@@ -404,13 +418,11 @@ public class GUIComponentFactory {
 
 		Label itemTitleLabel = new Label(item.getItemName());
 		itemTitleLabel.setWrapText(true);
-//		itemTitleLabel.setPrefWidth(450);
 		itemTitleLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 23));
 		itemTitleLabel.setTextFill(Color.web(Main.themeWhite));
 
 		Label itemSizeLabel = new Label(" (" + item.getItemSize() + ")");
 		itemSizeLabel.setWrapText(true);
-//		itemSizeLabel.setPrefWidth(450);
 		itemSizeLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 23));
 		itemSizeLabel.setTextFill(Color.web(Main.themeOrange));
 
@@ -451,6 +463,124 @@ public class GUIComponentFactory {
 				"-fx-background-color : #545877; -fx-text-fill : #F3F3F3; -fx-font-weight : bold; -fx-font-size : 14px");
 
 		return qtySpinner;
+	}
+
+	public static HBox createCartItemBox(Stage primaryStage, Item item, ScrollPane cartPageScrollPane) {
+		HBox itemBox = new HBox();
+		itemBox.setAlignment(Pos.CENTER_LEFT);
+		itemBox.setBackground(new Background(new BackgroundFill(Color.web(Main.navbarGrey), null, null)));
+		itemBox.setMaxWidth(710);
+		itemBox.setMinHeight(170);
+		itemBox.setOnMouseClicked(e -> {
+			ItemDetailPage.initCustomerItemDetailPage(primaryStage, item);
+		});
+
+		itemBox.setOnMouseEntered(e -> {
+			itemBox.setBackground(new Background(new BackgroundFill(Color.web("#252633"), null, null)));
+		});
+		itemBox.setOnMouseExited(e -> {
+			itemBox.setBackground(new Background(new BackgroundFill(Color.web(Main.navbarGrey), null, null)));
+		});
+
+		HBox content = new HBox();
+		content.setSpacing(20);
+		content.setAlignment(Pos.CENTER_LEFT);
+		content.setTranslateX(20);
+
+		Rectangle picture = new Rectangle(130, 130, Color.GRAY);
+		picture.setArcHeight(10);
+		picture.setArcWidth(10);
+
+		VBox itemDetail = new VBox();
+		int itemDetailHeight = 120;
+		itemDetail.setMaxHeight(itemDetailHeight);
+		itemDetail.setMinWidth(520);
+		itemDetail.setMaxWidth(520);
+
+		VBox titleContainer = new VBox();
+		titleContainer.setMinHeight(itemDetailHeight * 0.5);
+		titleContainer.setAlignment(Pos.CENTER_LEFT);
+
+		Label itemTitle = new Label(item.getItemName());
+		itemTitle.setWrapText(true);
+		itemTitle.setPrefWidth(450);
+		itemTitle.setFont(Font.font("Helvetica", FontWeight.BOLD, 23));
+		itemTitle.setTextFill(Color.web(Main.themeWhite));
+
+		titleContainer.getChildren().addAll(itemTitle);
+
+		HBox priceStockContainer = new HBox();
+		priceStockContainer.setAlignment(Pos.CENTER_LEFT);
+		priceStockContainer.setSpacing(10);
+
+		Button stockLeftLabel = new Button(item.getItemCategory());
+		stockLeftLabel.setMinHeight(20);
+//		stockLeftLabel.setMinWidth(50);
+		stockLeftLabel.setStyle(
+				"-fx-background-color : #ff2121; -fx-font-family : Helvetica; -fx-font-weight : bold; -fx-font-size : 15px; -fx-text-fill : white");
+
+		Label itemPriceLabel = new Label("¥" + item.getItemPrice());
+		itemPriceLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 30));
+		itemPriceLabel.setTextFill(Color.web(Main.themeOrange));
+//		itemPriceLabel.setMinWidth(300);
+
+		Button removeButton = new Button(" x ");
+		removeButton.setMinHeight(20);
+		removeButton.setMinWidth(50);
+		removeButton.setTranslateX(-20);
+		removeButton.setTranslateY(20);
+
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Item Removal Confirmation");
+		alert.setHeaderText("Do you want to remove this item from your wishlist?");
+		alert.setContentText("Please confirm your choice.");
+
+		removeButton.setOnAction(e -> {
+
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.isPresent() && result.get() == ButtonType.OK) {
+//				CartHandler.removeItemFromCart(cartRow);
+//				Route.redirect(primaryStage, "", "Search Items in GoGoQuery Store");
+			}
+		});
+		removeButton.setStyle(
+				"-fx-background-color : #ff2121; -fx-font-family : Helvetica; -fx-font-weight : bold; -fx-font-size : 15px; -fx-text-fill : white");
+		removeButton.setOnMouseEntered(e -> {
+			removeButton.setStyle(
+					"-fx-background-color : #c91a1a; -fx-font-family : Helvetica; -fx-font-weight : bold; -fx-font-size : 15px; -fx-text-fill : white");
+		});
+
+		removeButton.setOnMouseExited(e -> {
+			removeButton.setStyle(
+					"-fx-background-color : #ff2121; -fx-font-family : Helvetica; -fx-font-weight : bold; -fx-font-size : 15px; -fx-text-fill : white");
+		});
+
+		HBox stockLabelContainer = new HBox();
+		stockLabelContainer.setAlignment(Pos.CENTER);
+
+		Label stockLabel = new Label("Quantity ");
+		stockLabel.setFont(Font.font("Calibri", FontWeight.BOLD, 19));
+		stockLabel.setTextFill(Color.web("#717489"));
+
+		Label stockQtyLabel = new Label(Integer.toString(123));
+		stockQtyLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 19));
+		stockQtyLabel.setTextFill(Color.web(Main.themeOrange));
+
+		stockLabelContainer.getChildren().addAll(stockLabel, stockQtyLabel);
+
+		VBox rightContent = new VBox();
+		rightContent.setAlignment(Pos.TOP_RIGHT);
+		rightContent.setMinHeight(170);
+		rightContent.setMinWidth(80);
+		rightContent.getChildren().addAll(removeButton);
+
+		priceStockContainer.getChildren().addAll(itemPriceLabel, stockLeftLabel);
+
+		itemDetail.getChildren().addAll(titleContainer, priceStockContainer);
+
+		content.getChildren().addAll(picture, itemDetail);
+		itemBox.getChildren().addAll(content, rightContent);
+		return itemBox;
 	}
 
 }
