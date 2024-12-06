@@ -17,38 +17,22 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
-import javafx.stage.Stage;
 import model.presentation.TransactionView;
 
 public class BuyerHistoryPage {
 
 	public static ArrayList<TransactionView> historyList = new ArrayList<>();
 
-	public static void loadPage(Stage primaryStage) {
+	public static void loadPage() {
 
 		VBox screen = new VBox();
-		screen.setBackground(Main.defaultBg);
-		screen.setSpacing(20);
-		screen.setAlignment(Pos.TOP_CENTER);
-		screen.setMinWidth(Main.viewPortWidth);
-		screen.setMinHeight(10);
-
 		HBox jumbotronMessageContainer = new HBox();
-		jumbotronMessageContainer.setTranslateY(97);
 
 		Label historyLabel = new Label("'s history");
-		historyLabel.setFont(Font.font("Helvetica", FontWeight.NORMAL, FontPosture.ITALIC, 90));
-		historyLabel.setTextFill(Color.WHITE);
 
 		Label customerNameLabel = new Label(Main.currentUser.getUsername());
-		customerNameLabel.setFont(Font.font("Helvetica", FontWeight.NORMAL, FontPosture.ITALIC, 90));
-		customerNameLabel.setTextFill(Color.web(Main.themeOrange));
 
 		jumbotronMessageContainer.getChildren().addAll(customerNameLabel, historyLabel);
-		jumbotronMessageContainer.setMinWidth(Main.contentWidth);
-		jumbotronMessageContainer.setMaxWidth(Main.contentWidth);
-		jumbotronMessageContainer.setMinHeight(100);
-		jumbotronMessageContainer.setAlignment(Pos.CENTER_LEFT);
 
 		ObservableList<TransactionView> observableHistoryList = FXCollections.observableArrayList(historyList);
 
@@ -71,17 +55,44 @@ public class BuyerHistoryPage {
 
 		table.setItems(observableHistoryList);
 
+		screen.getChildren().addAll(GUIComponentFactory.createNavbar(Main.defaultPlaceholder),
+				jumbotronMessageContainer, table);
+
+		Main.switchRoot(screen);
+
+//		
+//		
+//		
+//		
+//		
+//		
+//		
+//		
+//------STYLING (Action and Logic doesn't exist here)--------------------------------------------------------------------------------------
+		screen.setBackground(Main.defaultBg);
+		screen.setSpacing(20);
+		screen.setAlignment(Pos.TOP_CENTER);
+		screen.setMinWidth(Main.viewPortWidth);
+		screen.setMinHeight(10);
+
+		jumbotronMessageContainer.setTranslateY(97);
+
+		historyLabel.setFont(Font.font("Helvetica", FontWeight.NORMAL, FontPosture.ITALIC, 90));
+		historyLabel.setTextFill(Color.WHITE);
+
+		customerNameLabel.setFont(Font.font("Helvetica", FontWeight.NORMAL, FontPosture.ITALIC, 90));
+		customerNameLabel.setTextFill(Color.web(Main.themeOrange));
+
+		jumbotronMessageContainer.setMinWidth(Main.contentWidth);
+		jumbotronMessageContainer.setMaxWidth(Main.contentWidth);
+		jumbotronMessageContainer.setMinHeight(100);
+		jumbotronMessageContainer.setAlignment(Pos.CENTER_LEFT);
+
 		double tableWidth = Main.viewPortWidth * 0.7;
 		table.setTranslateY(97);
 		table.setMaxWidth(tableWidth);
 
 		table.getColumns().forEach(column -> column.setPrefWidth(tableWidth / table.getColumns().size()));
-
-		screen.getChildren().addAll(GUIComponentFactory.createNavbar(primaryStage, Main.defaultPlaceholder),
-				jumbotronMessageContainer, table);
-
-		primaryStage.getScene().setRoot(screen);
-		primaryStage.show();
 
 	}
 }

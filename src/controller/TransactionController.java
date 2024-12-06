@@ -1,6 +1,5 @@
 package controller;
 
-import javafx.stage.Stage;
 import model.domain.Transaction;
 import routes.Route;
 
@@ -9,8 +8,8 @@ public class TransactionController {
 		Transaction.purchaseItem(userID, itemID);
 	}
 
-	public static void viewHistory(Stage primaryStage, String userID) {
+	public static void viewHistory(String userID) {
 		Transaction.viewHistory(userID);
-		Route.redirectBuyerHistoryPage(primaryStage);
+		Route.redirectBuyerHistoryPage();
 	}
 }

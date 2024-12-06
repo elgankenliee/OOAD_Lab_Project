@@ -1,6 +1,14 @@
 package model.domain;
 
+import java.sql.SQLException;
+
+import client.Main;
+import util.AESHelper;
+import util.Connect;
+
 public class User {
+
+	private static Connect db = Connect.getInstance();
 
 	private String userID;
 	private String username;
@@ -66,6 +74,63 @@ public class User {
 
 	public void setUserRole(String userRole) {
 		this.userRole = userRole;
+	}
+
+	public static String getSellerName(String sellerID) {
+		String query = "SELECT Username FROM Users WHERE UserID = " + sellerID + ";";
+		db.rs = db.execQuery(query);
+		try {
+			if (db.rs.next()) {
+				return db.rs.getString("Username");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "anonymous";
+	}
+
+	public static String login(String username, String password) {
+		String query = "SELECT * FROM Users WHERE username = '" + username + "'";
+		db.rs = db.execQuery(query);
+
+		try {
+			if (db.rs.next()) {
+
+				String role = null;
+
+				int userID = db.rs.getInt("UserID");
+				String dbUsername = db.rs.getString("Username");
+				String dbPassword = db.rs.getString("Password");
+				String userPhone = db.rs.getString("PhoneNumber");
+				String userAddress = db.rs.getString("Address");
+				String userRole = db.rs.getString("Role");
+
+				if (dbPassword.equals(AESHelper.encrypt(password, Main.AESencryptionKey))) {
+					Main.currentUser = new User(String.valueOf(userID), dbUsername, dbPassword, userPhone, userAddress,
+							userRole);
+
+					if (userRole.equalsIgnoreCase("seller")) {
+						role = "Seller";
+					} else {
+						role = "Customer";
+					}
+
+					return role;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return "invalid";
+	}
+
+	public static void register(String username, String password, String phoneNumber, String address, String role) {
+		String query = String.format(
+				"INSERT INTO Users (Username, Password, PhoneNumber, Address, Role) VALUES ('%s', '%s', '%s', '%s', '%s');",
+				username, password, phoneNumber, address, role);
+		db.execUpdate(query);
+
 	}
 
 }

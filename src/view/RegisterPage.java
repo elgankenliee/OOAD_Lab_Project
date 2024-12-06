@@ -3,27 +3,22 @@ package view;
 import client.Main;
 import factories.GUIComponentFactory;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 public class RegisterPage {
 
-	public static void loadPage(Stage primaryStage) {
+	public static void loadPage() {
 		VBox titleContainer = GUIComponentFactory.createLogo();
 
-		VBox parentContainer = new VBox();
-		parentContainer.setAlignment(Pos.CENTER);
-		parentContainer.setSpacing(10);
+		VBox root = new VBox();
+		root.setAlignment(Pos.CENTER);
+		root.setSpacing(10);
 
-		parentContainer.setBackground(Main.defaultBg);
+		root.setBackground(Main.defaultBg);
 
-		parentContainer.getChildren().addAll(titleContainer, GUIComponentFactory.createRegisterForm(primaryStage));
+		root.getChildren().addAll(titleContainer, GUIComponentFactory.createRegisterForm());
 
-		Scene scene = new Scene(parentContainer, Main.viewPortWidth, Main.viewPortHeight);
-
-		primaryStage.setScene(scene);
-		primaryStage.show();
+		Main.switchRoot(root);
 	}
 
 }

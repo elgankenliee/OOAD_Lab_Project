@@ -30,11 +30,11 @@ public class ItemDetailPage {
 
 	public static ArrayList<String> bidList = new ArrayList<>();
 
-	public static void initCustomerItemDetailPage(Stage primaryStage, Item item) {
-		VBox screen = new VBox();
-		screen.setBackground(Main.defaultBg);
-		screen.setAlignment(Pos.TOP_CENTER);
-		screen.setSpacing(80);
+	public static void loadPage(Item item) {
+		VBox root = new VBox();
+		root.setBackground(Main.defaultBg);
+		root.setAlignment(Pos.TOP_CENTER);
+		root.setSpacing(80);
 
 		HBox content = new HBox();
 		int contentSpacing = 0;
@@ -221,12 +221,12 @@ public class ItemDetailPage {
 								"Are you sure you want to place a bid of ¥" + bid + "?", "");
 						alert.showAndWait().ifPresent(response -> {
 							if (response == ButtonType.OK) {
-								ItemController.offerPrice(item, bid);
+								ItemController.offerPrice(item.getitemID(), bid);
 								Alert notification = GUIComponentFactory.createNotification("Notification",
 										"Your bid has been placed", "Watch out for another bidder!");
 								notification.showAndWait();
 								bidWindow.close();
-								ItemController.viewDetail(primaryStage, item);
+								ItemController.viewDetail(item);
 							}
 						});
 
@@ -266,12 +266,9 @@ public class ItemDetailPage {
 		middleContent.getChildren().addAll(topMiddleContent, bottomMiddleContent);
 		leftContent.getChildren().addAll(picture);
 		content.getChildren().addAll(leftContent, middleContent, rightContent);
-		screen.getChildren().addAll(GUIComponentFactory.createNavbar(primaryStage, "Search Items in CaLouselF Store"),
-				content);
+		root.getChildren().addAll(GUIComponentFactory.createNavbar("Search Items in CaLouselF Store"), content);
 
-		Scene scene = new Scene(screen, Main.viewPortWidth, Main.viewPortHeight);
-		primaryStage.setScene(scene);
-		primaryStage.show();
+		Main.switchRoot(root);
 	}
 
 }

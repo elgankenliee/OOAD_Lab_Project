@@ -17,8 +17,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
@@ -31,7 +29,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.stage.Stage;
 import model.domain.Item;
 import routes.Route;
 
@@ -47,7 +44,7 @@ public class GUIComponentFactory {
 		return newLabel;
 	}
 
-	public static VBox createRegisterForm(Stage primaryStage) {
+	public static VBox createRegisterForm() {
 		VBox registerWindow = new VBox();
 		registerWindow.setSpacing(10);
 		registerWindow.setAlignment(Pos.CENTER_LEFT);
@@ -89,15 +86,15 @@ public class GUIComponentFactory {
 		Label signInLabel = new Label("Already have an account? Sign in ");
 		signInLabel.setTextFill(Color.GRAY);
 		Hyperlink registerLink = new Hyperlink("Here!");
-		registerLink.setOnAction(e -> Route.redirectLoginPage(primaryStage));
+		registerLink.setOnAction(e -> Route.redirectLoginPage());
 		linkContainer.getChildren().addAll(signInLabel, registerLink);
 		linkContainer.setAlignment(Pos.CENTER);
 
 		Button registerButton = createButton("Register");
 		registerButton.setMaxWidth(formWidth);
-		registerButton.setOnAction(e -> UserController.checkAccountValidation(primaryStage, nameField.getText(),
-				passField.getText(), numField.getText(), addressField.getText(), roleToggleGroup.getSelectedToggle(),
-				termsCheckbox.isSelected()));
+		registerButton.setOnAction(
+				e -> UserController.checkAccountValidation(nameField.getText(), passField.getText(), numField.getText(),
+						addressField.getText(), roleToggleGroup.getSelectedToggle(), termsCheckbox.isSelected()));
 
 		registerWindow.getChildren().addAll(titleLabel, divider, createLabel("Username", 14), nameField,
 				createLabel("Password", 14), passField, createLabel("Phone Number (+62)", 14), numField,
@@ -107,9 +104,8 @@ public class GUIComponentFactory {
 		registerWindow.setTranslateY(-60);
 		registerWindow.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
-				UserController.checkAccountValidation(primaryStage, nameField.getText(), passField.getText(),
-						numField.getText(), addressField.getText(), roleToggleGroup.getSelectedToggle(),
-						termsCheckbox.isSelected());
+				UserController.checkAccountValidation(nameField.getText(), passField.getText(), numField.getText(),
+						addressField.getText(), roleToggleGroup.getSelectedToggle(), termsCheckbox.isSelected());
 			}
 		});
 
@@ -117,7 +113,7 @@ public class GUIComponentFactory {
 
 	}
 
-	public static VBox createLoginForm(Stage primaryStage) {
+	public static VBox createLoginForm() {
 
 		VBox loginWindow = new VBox();
 		loginWindow.setSpacing(10);
@@ -146,7 +142,7 @@ public class GUIComponentFactory {
 //		registerLink.setOnAction(e -> Route.redirectRegisterPage(primaryStage));
 
 		registerLink.setOnAction(e -> {
-			Route.redirectRegisterPage(primaryStage);
+			Route.redirectRegisterPage();
 		});
 		linkContainer.getChildren().addAll(registerLabel, registerLink);
 		linkContainer.setAlignment(Pos.CENTER);
@@ -155,7 +151,7 @@ public class GUIComponentFactory {
 		loginButton.setMaxWidth(formWidth);
 
 		loginButton.setOnAction(e -> {
-			UserController.login(primaryStage, nameField.getText(), passField.getText());
+			UserController.login(nameField.getText(), passField.getText());
 		});
 
 		loginWindow.getChildren().addAll(titleLabel, divider, createLabel("Username", 14), nameField,
@@ -165,7 +161,7 @@ public class GUIComponentFactory {
 
 		loginWindow.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
-				UserController.login(primaryStage, nameField.getText(), passField.getText());
+				UserController.login(nameField.getText(), passField.getText());
 			}
 		});
 
@@ -198,7 +194,7 @@ public class GUIComponentFactory {
 		return titleContainer;
 	}
 
-	public static VBox createNavbar(Stage primaryStage, String placeholder) {
+	public static VBox createNavbar(String placeholder) {
 
 		VBox navbarContainer = new VBox();
 		navbarContainer.setAlignment(Pos.BOTTOM_CENTER);
@@ -224,7 +220,7 @@ public class GUIComponentFactory {
 
 		Button searchButton = createNavbarButton("Search");
 		searchButton.setOnAction(e -> {
-			Route.redirectBuyerHomePage(primaryStage, searchBar.getText(), searchBar.getText());
+			ItemController.browseItem(searchBar.getText(), searchBar.getText());
 		});
 		searchButton.setStyle(
 				"-fx-background-color: #7278B2; -fx-text-fill: #F3F3F3; -fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family : helvetica");
@@ -245,13 +241,13 @@ public class GUIComponentFactory {
 
 		navbarContainer.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
-				ItemController.browseItem(primaryStage, searchBar.getText(), searchBar.getText());
+				ItemController.browseItem(searchBar.getText(), searchBar.getText());
 			}
 		});
 
 		VBox navbarLogo = createNavbarLogo();
 		navbarLogo.setOnMouseClicked(e -> {
-			Route.redirectBuyerHomePage(primaryStage, "", Main.defaultPlaceholder);
+			ItemController.browseItem("", Main.defaultPlaceholder);
 		});
 
 		HBox leftNavbarContents = new HBox();
@@ -271,13 +267,13 @@ public class GUIComponentFactory {
 		Button wishlistButton = createNavbarButton("My Wishlist");
 		wishlistButton.setMinHeight(searchBarHeight);
 		wishlistButton.setOnAction(e -> {
-			WishlistController.initWishlist(primaryStage, "", "Search Items in CaLouselF Store");
+			WishlistController.initWishlist("", "Search Items in CaLouselF Store");
 		});
 
 		Button historyButton = createNavbarButton("History");
 		historyButton.setMinHeight(searchBarHeight);
 		historyButton.setOnAction(e -> {
-			TransactionController.viewHistory(primaryStage, Main.currentUser.getUserID());
+			TransactionController.viewHistory(Main.currentUser.getUserID());
 		});
 
 		Button logoutButton = createButton("Log Out");
@@ -295,7 +291,7 @@ public class GUIComponentFactory {
 		});
 
 		logoutButton.setOnAction(e -> {
-			UserController.logout(primaryStage);
+			UserController.logout();
 		});
 
 		rightNavbarContents.getChildren().addAll(divider, wishlistButton, historyButton, logoutButton);
@@ -388,15 +384,13 @@ public class GUIComponentFactory {
 		return resultMsgLabel;
 	}
 
-	public static VBox createHomePageItemCard(Stage primaryStage, Item item) {
+	public static VBox createHomePageItemCard(Item item) {
 		VBox itemBox = new VBox();
 		itemBox.setAlignment(Pos.CENTER);
 		itemBox.setBackground(new Background(new BackgroundFill(Color.web(Main.navbarGrey), null, null)));
 		itemBox.setMaxWidth(700);
 		itemBox.setMinHeight(170);
-		itemBox.setOnMouseClicked(e -> {
-			ItemController.viewDetail(primaryStage, item);
-		});
+		itemBox.setOnMouseClicked(e -> ItemController.viewDetail(item));
 
 		itemBox.setOnMouseEntered(e -> {
 			itemBox.setBackground(new Background(new BackgroundFill(Color.web("#252633"), null, null)));
@@ -458,29 +452,13 @@ public class GUIComponentFactory {
 		return itemBox;
 	}
 
-	public static Spinner createSpinner(int minVal, int maxVal, int initVal) {
-		Spinner<Integer> qtySpinner = new Spinner<>();
-		SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(minVal, maxVal,
-				initVal);
-		qtySpinner.setValueFactory(valueFactory);
-		qtySpinner.setPrefWidth(100);
-		qtySpinner.setPrefHeight(26);
-
-		qtySpinner.setStyle(
-				"-fx-background-color : #545877; -fx-text-fill : #F3F3F3; -fx-font-weight : bold; -fx-font-size : 14px");
-
-		return qtySpinner;
-	}
-
-	public static HBox createCartItemBox(Stage primaryStage, Item item, ScrollPane wishlistPageScrollPane) {
+	public static HBox createCartItemBox(Item item, ScrollPane wishlistPageScrollPane) {
 		HBox itemBox = new HBox();
 		itemBox.setAlignment(Pos.CENTER_LEFT);
 		itemBox.setBackground(new Background(new BackgroundFill(Color.web(Main.navbarGrey), null, null)));
 		itemBox.setMaxWidth(710);
 		itemBox.setMinHeight(170);
-		itemBox.setOnMouseClicked(e -> {
-			ItemController.viewDetail(primaryStage, item);
-		});
+		itemBox.setOnMouseClicked(e -> ItemController.viewDetail(item));
 
 		itemBox.setOnMouseEntered(e -> {
 			itemBox.setBackground(new Background(new BackgroundFill(Color.web("#252633"), null, null)));
@@ -528,7 +506,6 @@ public class GUIComponentFactory {
 		Label itemPriceLabel = new Label("¥" + item.getItemPrice());
 		itemPriceLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 30));
 		itemPriceLabel.setTextFill(Color.web(Main.themeOrange));
-//		itemPriceLabel.setMinWidth(300);
 
 		Button removeButton = new Button(" x ");
 		removeButton.setMinHeight(20);
@@ -545,7 +522,7 @@ public class GUIComponentFactory {
 					Alert notification = GUIComponentFactory.createNotification("Notification",
 							"Item has been removed from your wishlist", "");
 					notification.show();
-					WishlistController.initWishlist(primaryStage, "", Main.defaultPlaceholder);
+					WishlistController.initWishlist("", Main.defaultPlaceholder);
 				} else {
 					// User canceled the action
 					System.out.println("Bid canceled by user.");
@@ -589,6 +566,7 @@ public class GUIComponentFactory {
 
 		content.getChildren().addAll(picture, itemDetail);
 		itemBox.getChildren().addAll(content, rightContent);
+
 		return itemBox;
 	}
 

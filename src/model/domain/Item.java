@@ -1,8 +1,16 @@
 package model.domain;
 
+import java.sql.SQLException;
+
+import client.Main;
+import util.Connect;
+import view.BuyerHomePage;
+import view.ItemDetailPage;
+
 public class Item {
 
-	// Attributes
+	private static Connect db = Connect.getInstance();
+
 	private String itemID;
 	private String sellerID;
 
@@ -97,5 +105,86 @@ public class Item {
 
 	public void setItemOfferStatus(String itemOfferStatus) {
 		this.itemOfferStatus = itemOfferStatus;
+	}
+
+	public static void browseItem(boolean isEmptySearch, String searchedItemName) {
+		String query = null;
+		if (isEmptySearch) {
+			BuyerHomePage.categoryList.clear();
+			query = "SELECT * FROM Items WHERE ItemStatus LIKE 'approved' ORDER BY ItemID DESC";
+		} else {
+			query = "SELECT * FROM Items WHERE ItemStatus LIKE 'approved' AND ItemName LIKE '%" + searchedItemName
+					+ "%' OR ItemCategory LIKE '%" + searchedItemName + "%' ORDER BY ItemID DESC";
+		}
+		db.rs = db.execQuery(query);
+		try {
+			while (db.rs.next()) {
+
+				String dbItemID = db.rs.getString("ItemID");
+				String dbSellerID = db.rs.getString("SellerID");
+				String dbItemName = db.rs.getString("ItemName");
+				String dbItemSize = db.rs.getString("ItemSize");
+				double dbItemPrice = db.rs.getDouble("ItemPrice");
+				String dbItemCategory = db.rs.getString("ItemCategory");
+				String dbItemStatus = db.rs.getString("ItemStatus");
+				String dbItemWishList = db.rs.getString("ItemWishlist");
+				String dbItemOfferStatus = db.rs.getString("ItemOfferStatus");
+				BuyerHomePage.itemList.add(new Item(dbItemID, dbSellerID, dbItemName, dbItemSize, dbItemPrice,
+						dbItemCategory, dbItemStatus, dbItemWishList, dbItemOfferStatus));
+				if (searchedItemName == "") {
+					if (!BuyerHomePage.categoryList.contains(dbItemCategory.toLowerCase())) {
+						BuyerHomePage.categoryList.add(dbItemCategory.toLowerCase());
+					}
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public static void viewDetail(Item item) {
+
+		String itemID = item.getitemID();
+
+		String query = "SELECT CONCAT(username, ' placed a ¥', offerprice,' bid at ', offerdate) AS BidSentence "
+				+ "FROM users u JOIN offers o ON u.UserID = o.BuyerID " + "WHERE itemID = " + itemID
+				+ " ORDER BY offerdate DESC";
+		db.rs = db.execQuery(query);
+		try {
+			while (db.rs.next()) {
+				String dbBidSentence = db.rs.getString("BidSentence");
+				ItemDetailPage.bidList.add(dbBidSentence);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public static int getHighestBid(Item item) {
+		String query = "SELECT MAX(offerprice) AS HighestBid FROM offers WHERE itemID = " + item.getitemID();
+		db.rs = db.execQuery(query);
+		try {
+			if (db.rs.next()) {
+				return db.rs.getInt("HighestBid");
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return (int) Math.round(item.getItemPrice());
+
+	}
+
+	public static void offerPrice(String itemID, int bidPrice) {
+		// TODO Auto-generated method stub
+		String query = String.format(
+				"insert into offers (buyerid, itemid, offerprice, offerstatus) values (%s, %s, %d, 'Pending');",
+				Main.currentUser.getUserID(), itemID, bidPrice);
+		db.execUpdate(query);
 	}
 }

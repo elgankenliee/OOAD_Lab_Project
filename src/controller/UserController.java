@@ -7,7 +7,6 @@ import factories.GUIComponentFactory;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Toggle;
-import javafx.stage.Stage;
 import model.domain.User;
 import routes.Route;
 import util.AESHelper;
@@ -16,59 +15,13 @@ import util.Connect;
 public class UserController {
 
 	private static Connect db = Connect.getInstance();
-	private static Boolean loggedInAsBuyer = false;
-	private static Boolean loggedInAsSeller = false;
 
 	public UserController() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public static String getSellerName(String sellerID) {
-		String query = "SELECT Username FROM Users WHERE UserID = " + sellerID + ";";
-		db.rs = db.execQuery(query);
-		try {
-			if (db.rs.next()) {
-				return db.rs.getString("Username");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return "anonymous";
-	}
-
-	public static boolean checkCredentials(String username, String password) {
-		String query = "SELECT * FROM Users WHERE username = '" + username + "'";
-		db.rs = db.execQuery(query);
-
-		try {
-			if (db.rs.next()) {
-
-				int userID = db.rs.getInt("UserID");
-				String dbUsername = db.rs.getString("Username");
-				String dbPassword = db.rs.getString("Password");
-				String userPhone = db.rs.getString("PhoneNumber");
-				String userAddress = db.rs.getString("Address");
-				String userRole = db.rs.getString("Role");
-
-				if (dbPassword.equals(AESHelper.encrypt(password, Main.AESencryptionKey))) {
-					User user = new User(String.valueOf(userID), dbUsername, dbPassword, userPhone, userAddress,
-							userRole);
-
-					if (user.getUserRole().equalsIgnoreCase("seller")) {
-						loggedInAsSeller = true;
-					} else {
-						loggedInAsBuyer = true;
-					}
-
-					Main.currentUser = user;
-					return true;
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return false;
+		return User.getSellerName(sellerID);
 	}
 
 	public static boolean uniqueUser(String username) {
@@ -87,40 +40,31 @@ public class UserController {
 		return true;
 	}
 
-	public static void logout(Stage primaryStage) {
+	public static void logout() {
 		Main.currentUser = null;
-		loggedInAsBuyer = loggedInAsSeller = false;
-		Route.redirectLoginPage(primaryStage);
+		Route.redirectLoginPage();
 	}
 
-	public static void login(Stage primaryStage, String username, String password) {
+	public static void login(String username, String password) {
 
-		if (username.equals("") || password.equals("")) {
-
+		if (username.isEmpty() || password.isEmpty()) {
 			Alert alert = GUIComponentFactory.createError("Invalid Login", "Log in failed",
 					"Please fill out all fields.");
 			alert.showAndWait();
-
 			return;
 		}
 
-		loggedInAsBuyer = false;
-		loggedInAsSeller = false;
-
-		checkCredentials(username, password);
-
-		if (!loggedInAsBuyer && !loggedInAsSeller) {
+		String currRole = User.login(username, password);
+		if (currRole.equalsIgnoreCase("customer")) {
+			ItemController.browseItem("", Main.defaultPlaceholder);
+		} else if (currRole.equalsIgnoreCase("seller")) {
+			// insert smth here
+		} else {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Invalid Login");
 			alert.setHeaderText("Wrong Credentials!");
 			alert.setContentText("You entered a wrong username or password.");
 			alert.showAndWait();
-		}
-
-		if (loggedInAsBuyer) {
-			Route.redirectBuyerHomePage(primaryStage, "", Main.defaultPlaceholder);
-		} else if (loggedInAsSeller) {
-//			SellerHomePage.initSellerHome();
 		}
 
 	}
@@ -144,8 +88,8 @@ public class UserController {
 		return true;
 	}
 
-	public static void checkAccountValidation(Stage primaryStage, String username, String password, String phoneNum,
-			String address, Toggle role, boolean isAgree) {
+	public static void checkAccountValidation(String username, String password, String phoneNum, String address,
+			Toggle role, boolean isAgree) {
 
 		System.out.println(role);
 		if (username.isEmpty()) {
@@ -203,17 +147,14 @@ public class UserController {
 			String encryptedPassword = AESHelper.encrypt(password, Main.AESencryptionKey);
 			String userRole = role.toString().contains("'Seller'") ? "Seller" : "Buyer";
 			register(username, encryptedPassword, phoneNum, address, userRole);
-			Route.redirectLoginPage(primaryStage);
+			Route.redirectLoginPage();
 		}
 
 	}
 
 	public static void register(String username, String password, String phoneNumber, String address, String role) {
 
-		String query = String.format(
-				"INSERT INTO Users (Username, Password, PhoneNumber, Address, Role) VALUES ('%s', '%s', '%s', '%s', '%s');",
-				username, password, phoneNumber, address, role);
-		db.execUpdate(query);
+		User.register(username, password, phoneNumber, address, role);
 
 		Alert notification = GUIComponentFactory.createNotification("Notification", "Your account has been created",
 				"Please login with your credentials");

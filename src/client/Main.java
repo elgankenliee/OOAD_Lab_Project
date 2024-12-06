@@ -2,6 +2,7 @@ package client;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -29,6 +30,8 @@ public class Main extends Application {
 
 	public static String AESencryptionKey = "what if i just walk away bcs im a cool guy";
 
+	private static Stage primaryStage;
+
 	public static LinearGradient bgGradient2 = new LinearGradient(0, 0, 1, 1, true,
 			javafx.scene.paint.CycleMethod.REFLECT, new Stop(0, Color.web("#b968e8")),
 			new Stop(1, Color.web("#1d214f")));
@@ -46,10 +49,16 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-
+		Main.primaryStage = primaryStage;
 		primaryStage.setTitle("CaLouselF");
 		primaryStage.setScene(new Scene(new VBox(), viewPortWidth, viewPortHeight));
-		Route.redirectLoginPage(primaryStage);
+		Route.redirectLoginPage();
+	}
+
+	public static void switchRoot(Parent root) {
+		primaryStage.getScene().setRoot(root);
+		primaryStage.show();
+
 	}
 
 }

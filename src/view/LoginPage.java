@@ -4,24 +4,22 @@ import client.Main;
 import factories.GUIComponentFactory;
 import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 public class LoginPage {
 
-	public static void loadPage(Stage primaryStage) {
+	public static void loadPage() {
 
 		VBox titleContainer = GUIComponentFactory.createLogo();
 
-		VBox parentContainer = new VBox();
-		parentContainer.setAlignment(Pos.CENTER);
-		parentContainer.setSpacing(10);
+		VBox root = new VBox();
+		root.setAlignment(Pos.CENTER);
+		root.setSpacing(10);
 
-		parentContainer.setBackground(Main.defaultBg);
+		root.setBackground(Main.defaultBg);
 
-		parentContainer.getChildren().addAll(titleContainer, GUIComponentFactory.createLoginForm(primaryStage));
+		root.getChildren().addAll(titleContainer, GUIComponentFactory.createLoginForm());
 
-		primaryStage.getScene().setRoot(parentContainer);
-		primaryStage.show();
+		Main.switchRoot(root);
 
 	}
 
