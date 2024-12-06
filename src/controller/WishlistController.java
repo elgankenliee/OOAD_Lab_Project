@@ -6,7 +6,7 @@ import client.Main;
 import factories.GUIComponentFactory;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import model.Item;
+import model.domain.Item;
 import util.Connect;
 import view.BuyerWishlistPage;
 
@@ -14,7 +14,7 @@ public class WishlistController {
 
 	private static Connect db = Connect.getInstance();
 
-	public static boolean uniqueWishlist(int itemID, String userID) {
+	public static boolean uniqueWishlist(String itemID, String userID) {
 		String query = "SELECT * FROM Wishlist WHERE itemID = " + itemID + " AND BuyerID =" + userID + ";";
 		db.rs = db.execQuery(query);
 		try {
@@ -27,7 +27,7 @@ public class WishlistController {
 		return true;
 	}
 
-	public static void addWishlist(int itemID, String userID) {
+	public static void addWishlist(String itemID, String userID) {
 		if (uniqueWishlist(itemID, userID)) {
 			String query = "INSERT INTO Wishlist (BuyerID, ItemID) VALUES (" + userID + ", " + itemID + ")";
 			db.execUpdate(query);
@@ -41,6 +41,12 @@ public class WishlistController {
 		}
 	}
 
+	public static void removeWishlist(String itemID, String userID) {
+		String query = "DELETE FROM wishlist WHERE buyerID = " + userID + " AND itemID = " + itemID;
+		db.execUpdate(query);
+
+	}
+
 	public static void initWishlist(Stage primaryStage, String searchedItem, String searchbarText) {
 		BuyerWishlistPage.itemList.clear();
 		String query = "SELECT * " + "FROM wishlist w JOIN items i ON w.ItemID = i.ItemID " + "WHERE BuyerID = "
@@ -50,8 +56,8 @@ public class WishlistController {
 		try {
 			while (db.rs.next()) {
 
-				int dbItemID = db.rs.getInt("ItemID");
-				int dbSellerID = db.rs.getInt("SellerID");
+				String dbItemID = db.rs.getString("ItemID");
+				String dbSellerID = db.rs.getString("SellerID");
 				String dbItemName = db.rs.getString("ItemName");
 				String dbItemSize = db.rs.getString("ItemSize");
 				double dbItemPrice = db.rs.getDouble("ItemPrice");

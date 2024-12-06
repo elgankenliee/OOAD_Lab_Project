@@ -1,9 +1,8 @@
 package factories;
 
-import java.util.Optional;
-
 import client.Main;
 import controller.ItemController;
+import controller.TransactionController;
 import controller.UserController;
 import controller.WishlistController;
 import javafx.geometry.Insets;
@@ -33,9 +32,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import model.Item;
+import model.domain.Item;
 import routes.Route;
-import view.ItemDetailPage;
 
 public class GUIComponentFactory {
 
@@ -65,7 +63,6 @@ public class GUIComponentFactory {
 
 		TextField nameField = new TextField();
 		PasswordField passField = new PasswordField();
-		PasswordField confirmPassField = new PasswordField();
 		TextField numField = new TextField();
 		TextField addressField = new TextField();
 
@@ -146,7 +143,11 @@ public class GUIComponentFactory {
 
 		Hyperlink registerLink = new Hyperlink("Here!");
 		registerLink.setTranslateX(-3);
-		registerLink.setOnAction(e -> Route.redirectRegisterPage(primaryStage));
+//		registerLink.setOnAction(e -> Route.redirectRegisterPage(primaryStage));
+
+		registerLink.setOnAction(e -> {
+			Route.redirectRegisterPage(primaryStage);
+		});
 		linkContainer.getChildren().addAll(registerLabel, registerLink);
 		linkContainer.setAlignment(Pos.CENTER);
 
@@ -210,7 +211,7 @@ public class GUIComponentFactory {
 		HBox navbar = new HBox();
 		navbar.setAlignment(Pos.CENTER_LEFT);
 		navbar.setSpacing(80);
-		navbar.setMaxWidth(Main.viewPortWidth - 400);
+		navbar.setMaxWidth(Main.viewPortWidth - 350);
 		navbar.setMinHeight(navbarHeight);
 		navbar.setStyle("-fx-background-radius : 60; -fx-background-color:" + Main.navbarGrey + "");
 
@@ -273,6 +274,12 @@ public class GUIComponentFactory {
 			WishlistController.initWishlist(primaryStage, "", "Search Items in CaLouselF Store");
 		});
 
+		Button historyButton = createNavbarButton("History");
+		historyButton.setMinHeight(searchBarHeight);
+		historyButton.setOnAction(e -> {
+			TransactionController.viewHistory(primaryStage, Main.currentUser.getUserID());
+		});
+
 		Button logoutButton = createButton("Log Out");
 		logoutButton.setMinHeight(searchBarHeight);
 		logoutButton.setStyle(
@@ -291,7 +298,7 @@ public class GUIComponentFactory {
 			UserController.logout(primaryStage);
 		});
 
-		rightNavbarContents.getChildren().addAll(divider, wishlistButton, logoutButton);
+		rightNavbarContents.getChildren().addAll(divider, wishlistButton, historyButton, logoutButton);
 
 		navbar.getChildren().addAll(leftNavbarContents, rightNavbarContents);
 		navbarContainer.getChildren().addAll(navbar);
@@ -436,13 +443,13 @@ public class GUIComponentFactory {
 		itemCategoryLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 30));
 		itemCategoryLabel.setTextFill(Color.web(Main.themeOrange));
 
-		Button stockLeftLabel = new Button(item.getItemCategory());
-		stockLeftLabel.setMinHeight(20);
-		stockLeftLabel.setMinWidth(50);
-		stockLeftLabel.setStyle(
+		Button categoryLabel = new Button(item.getItemCategory());
+		categoryLabel.setMinHeight(20);
+		categoryLabel.setMinWidth(50);
+		categoryLabel.setStyle(
 				"-fx-background-color : #ff2121; -fx-font-family : Helvetica; -fx-font-weight : bold; -fx-font-size : 15px; -fx-text-fill : white");
 
-		priceCategoryContainer.getChildren().addAll(itemCategoryLabel, stockLeftLabel);
+		priceCategoryContainer.getChildren().addAll(itemCategoryLabel, categoryLabel);
 
 		itemDetail.getChildren().addAll(titleContainer, priceCategoryContainer);
 
@@ -465,14 +472,14 @@ public class GUIComponentFactory {
 		return qtySpinner;
 	}
 
-	public static HBox createCartItemBox(Stage primaryStage, Item item, ScrollPane cartPageScrollPane) {
+	public static HBox createCartItemBox(Stage primaryStage, Item item, ScrollPane wishlistPageScrollPane) {
 		HBox itemBox = new HBox();
 		itemBox.setAlignment(Pos.CENTER_LEFT);
 		itemBox.setBackground(new Background(new BackgroundFill(Color.web(Main.navbarGrey), null, null)));
 		itemBox.setMaxWidth(710);
 		itemBox.setMinHeight(170);
 		itemBox.setOnMouseClicked(e -> {
-			ItemDetailPage.initCustomerItemDetailPage(primaryStage, item);
+			ItemController.viewDetail(primaryStage, item);
 		});
 
 		itemBox.setOnMouseEntered(e -> {
@@ -513,10 +520,9 @@ public class GUIComponentFactory {
 		priceStockContainer.setAlignment(Pos.CENTER_LEFT);
 		priceStockContainer.setSpacing(10);
 
-		Button stockLeftLabel = new Button(item.getItemCategory());
-		stockLeftLabel.setMinHeight(20);
-//		stockLeftLabel.setMinWidth(50);
-		stockLeftLabel.setStyle(
+		Button categoryLabel = new Button(item.getItemCategory());
+		categoryLabel.setMinHeight(20);
+		categoryLabel.setStyle(
 				"-fx-background-color : #ff2121; -fx-font-family : Helvetica; -fx-font-weight : bold; -fx-font-size : 15px; -fx-text-fill : white");
 
 		Label itemPriceLabel = new Label("¥" + item.getItemPrice());
@@ -530,18 +536,21 @@ public class GUIComponentFactory {
 		removeButton.setTranslateX(-20);
 		removeButton.setTranslateY(20);
 
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Item Removal Confirmation");
-		alert.setHeaderText("Do you want to remove this item from your wishlist?");
-		alert.setContentText("Please confirm your choice.");
-
 		removeButton.setOnAction(e -> {
-
-			Optional<ButtonType> result = alert.showAndWait();
-			if (result.isPresent() && result.get() == ButtonType.OK) {
-//				CartHandler.removeItemFromCart(cartRow);
-//				Route.redirect(primaryStage, "", "Search Items in GoGoQuery Store");
-			}
+			Alert confirmation = createConfirmation("Item Removal Confirmation",
+					"Do you want to remove this item from your wishlist?", "Please confirm your choice.");
+			confirmation.showAndWait().ifPresent(response -> {
+				if (response == ButtonType.OK) {
+					WishlistController.removeWishlist(item.getitemID(), Main.currentUser.getUserID());
+					Alert notification = GUIComponentFactory.createNotification("Notification",
+							"Item has been removed from your wishlist", "");
+					notification.show();
+					WishlistController.initWishlist(primaryStage, "", Main.defaultPlaceholder);
+				} else {
+					// User canceled the action
+					System.out.println("Bid canceled by user.");
+				}
+			});
 		});
 		removeButton.setStyle(
 				"-fx-background-color : #ff2121; -fx-font-family : Helvetica; -fx-font-weight : bold; -fx-font-size : 15px; -fx-text-fill : white");
@@ -574,7 +583,7 @@ public class GUIComponentFactory {
 		rightContent.setMinWidth(80);
 		rightContent.getChildren().addAll(removeButton);
 
-		priceStockContainer.getChildren().addAll(itemPriceLabel, stockLeftLabel);
+		priceStockContainer.getChildren().addAll(itemPriceLabel, categoryLabel);
 
 		itemDetail.getChildren().addAll(titleContainer, priceStockContainer);
 

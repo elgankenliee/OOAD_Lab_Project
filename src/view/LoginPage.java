@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 public class LoginPage {
 
-	public static void initLoginPage(Stage primaryStage) {
+	public static void loadPage(Stage primaryStage) {
 
 		VBox titleContainer = GUIComponentFactory.createLogo();
 

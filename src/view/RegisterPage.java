@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 
 public class RegisterPage {
 
-	public static void initRegisterPage(Stage primaryStage) {
+	public static void loadPage(Stage primaryStage) {
 		VBox titleContainer = GUIComponentFactory.createLogo();
 
 		VBox parentContainer = new VBox();

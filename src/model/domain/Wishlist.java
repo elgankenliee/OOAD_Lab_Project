@@ -1,11 +1,11 @@
-package model;
+package model.domain;
 
 public class Wishlist {
 	private String wishlistID;
-	private int itemID;
-	private int buyerID;
+	private String itemID;
+	private String buyerID;
 
-	public Wishlist(String wishlistID, int itemID, int buyerID) {
+	public Wishlist(String wishlistID, String itemID, String buyerID) {
 		super();
 		this.wishlistID = wishlistID;
 		this.itemID = itemID;
@@ -20,19 +20,19 @@ public class Wishlist {
 		this.wishlistID = wishlistID;
 	}
 
-	public int getItemID() {
+	public String getItemID() {
 		return itemID;
 	}
 
-	public void setItemID(int itemID) {
+	public void setItemID(String itemID) {
 		this.itemID = itemID;
 	}
 
-	public int getBuyerID() {
+	public String getBuyerID() {
 		return buyerID;
 	}
 
-	public void setBuyerID(int buyerID) {
+	public void setBuyerID(String buyerID) {
 		this.buyerID = buyerID;
 	}
 }

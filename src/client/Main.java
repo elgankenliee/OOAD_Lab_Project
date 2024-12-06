@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.stage.Stage;
-import model.User;
+import model.domain.User;
 import routes.Route;
 
 public class Main extends Application {

@@ -8,7 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Toggle;
 import javafx.stage.Stage;
-import model.User;
+import model.domain.User;
 import routes.Route;
 import util.AESHelper;
 import util.Connect;
@@ -23,7 +23,7 @@ public class UserController {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static String getSellerName(int sellerID) {
+	public static String getSellerName(String sellerID) {
 		String query = "SELECT Username FROM Users WHERE UserID = " + sellerID + ";";
 		db.rs = db.execQuery(query);
 		try {
@@ -203,7 +203,7 @@ public class UserController {
 			String encryptedPassword = AESHelper.encrypt(password, Main.AESencryptionKey);
 			String userRole = role.toString().contains("'Seller'") ? "Seller" : "Buyer";
 			register(username, encryptedPassword, phoneNum, address, userRole);
-
+			Route.redirectLoginPage(primaryStage);
 		}
 
 	}
@@ -214,5 +214,9 @@ public class UserController {
 				"INSERT INTO Users (Username, Password, PhoneNumber, Address, Role) VALUES ('%s', '%s', '%s', '%s', '%s');",
 				username, password, phoneNumber, address, role);
 		db.execUpdate(query);
+
+		Alert notification = GUIComponentFactory.createNotification("Notification", "Your account has been created",
+				"Please login with your credentials");
+		notification.showAndWait();
 	}
 }

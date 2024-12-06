@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import client.Main;
+import controller.ItemController;
 import factories.GUIComponentFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,7 +25,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import model.Item;
+import model.domain.Item;
 
 public class BuyerWishlistPage {
 
@@ -114,7 +115,7 @@ public class BuyerWishlistPage {
 			itemContainer.getChildren().add(resultMsgContainer);
 
 			for (Item i : itemList) {
-				cartSubtotal += i.getItemPrice() * 1;
+				cartSubtotal += ItemController.getHighestBid(i);
 				itemContainer.getChildren()
 						.add(GUIComponentFactory.createCartItemBox(primaryStage, i, cartPageScrollPane));
 			}
@@ -161,7 +162,7 @@ public class BuyerWishlistPage {
 		totalLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 24));
 		totalLabel.setTextFill(Color.web(Main.themeWhite));
 
-		cartTotalPriceLabel.setText(String.format("$%.2f", cartSubtotal));
+		cartTotalPriceLabel.setText("¥" + ItemController.formatCurrency(cartSubtotal));
 		cartTotalPriceLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 30));
 		cartTotalPriceLabel.setTextFill(Color.web(Main.themeOrange));
 

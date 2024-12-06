@@ -1,10 +1,10 @@
-package model;
+package model.domain;
 
 public class Item {
 
 	// Attributes
-	private int itemID;
-	private int sellerID;
+	private String itemID;
+	private String sellerID;
 
 	private String itemName;
 	private String itemSize;
@@ -14,7 +14,7 @@ public class Item {
 	private String itemWishlist;
 	private String itemOfferStatus;
 
-	public Item(int itemID, int sellerID, String itemName, String itemSize, double itemPrice, String itemCategory,
+	public Item(String itemID, String sellerID, String itemName, String itemSize, double itemPrice, String itemCategory,
 			String itemStatus, String itemWishlist, String itemOfferStatus) {
 		this.itemID = itemID;
 		this.sellerID = sellerID;
@@ -27,19 +27,19 @@ public class Item {
 		this.itemOfferStatus = itemOfferStatus;
 	}
 
-	public int getSellerID() {
+	public String getSellerID() {
 		return sellerID;
 	}
 
-	public void setSellerID(int sellerID) {
+	public void setSellerID(String sellerID) {
 		this.sellerID = sellerID;
 	}
 
-	public int getitemID() {
+	public String getitemID() {
 		return itemID;
 	}
 
-	public void setitemID(int itemID) {
+	public void setitemID(String itemID) {
 		this.itemID = itemID;
 	}
 

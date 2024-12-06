@@ -18,7 +18,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import model.Item;
+import model.domain.Item;
 import routes.Route;
 
 public class BuyerHomePage {
@@ -26,7 +26,7 @@ public class BuyerHomePage {
 	public static ArrayList<String> categoryList = new ArrayList<>();
 	public static ArrayList<Item> itemList = new ArrayList<>();
 
-	public static void initBuyerHomePage(Stage primaryStage, String itemName, String searchBarText) {
+	public static void loadPage(Stage primaryStage, String itemName, String searchBarText) {
 
 		VBox screen = new VBox();
 		screen.setBackground(Main.defaultBg);
