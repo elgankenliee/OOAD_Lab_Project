@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import client.Main;
 import util.Connect;
+import view.AdminHomePage;
 import view.BuyerHomePage;
 import view.ItemDetailPage;
 
@@ -186,5 +187,41 @@ public class Item {
 				"insert into offers (buyerid, itemid, offerprice, offerstatus) values (%s, %s, %d, 'Pending');",
 				Main.currentUser.getUserID(), itemID, bidPrice);
 		db.execUpdate(query);
+	}
+
+	public static void viewRequestedItem() {
+		String query = "SELECT * FROM items WHERE itemStatus LIKE 'Waiting for approval' ORDER BY ItemID DESC";
+		db.rs = db.execQuery(query);
+		try {
+			while (db.rs.next()) {
+				String dbItemID = db.rs.getString("ItemID");
+				String dbSellerID = db.rs.getString("SellerID");
+				String dbItemName = db.rs.getString("ItemName");
+				String dbItemSize = db.rs.getString("ItemSize");
+				Double dbItemPrice = db.rs.getDouble("ItemPrice");
+				String dbItemCategory = db.rs.getString("ItemCategory");
+				String dbItemStatus = db.rs.getString("ItemStatus");
+				String dbItemWishlist = db.rs.getString("ItemWishlist");
+				String dbItemOfferStatus = db.rs.getString("ItemOfferStatus");
+				AdminHomePage.itemList.add(new Item(dbItemID, dbSellerID, dbItemName, dbItemSize, dbItemPrice,
+						dbItemCategory, dbItemStatus, dbItemWishlist, dbItemOfferStatus));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void approveItem(String itemID) {
+		String query = "UPDATE items SET ItemStatus = 'Approved', ItemOfferStatus = 'Waiting for highest bidder' WHERE ItemID = "
+				+ itemID;
+		db.execUpdate(query);
+	}
+
+	public static void declineItem(String itemID, String reason) {
+		String query = "UPDATE items SET ItemStatus = 'Declined', ItemOfferStatus = 'Declined', DeclineReason = '"
+				+ reason + "' WHERE ItemID = " + itemID;
+		db.execUpdate(query);
+
 	}
 }

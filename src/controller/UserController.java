@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import client.Main;
 import factories.GUIComponentFactory;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Toggle;
 import model.domain.User;
 import routes.Route;
@@ -15,10 +14,6 @@ import util.Connect;
 public class UserController {
 
 	private static Connect db = Connect.getInstance();
-
-	public UserController() {
-		// TODO Auto-generated constructor stub
-	}
 
 	public static String getSellerName(String sellerID) {
 		return User.getSellerName(sellerID);
@@ -46,6 +41,10 @@ public class UserController {
 	}
 
 	public static void login(String username, String password) {
+		if (username.equalsIgnoreCase("admin") && password.equalsIgnoreCase("admin")) {
+			ItemController.viewRequestedItem();
+			return;
+		}
 
 		if (username.isEmpty() || password.isEmpty()) {
 			Alert alert = GUIComponentFactory.createError("Invalid Login", "Log in failed",
@@ -60,11 +59,9 @@ public class UserController {
 		} else if (currRole.equalsIgnoreCase("seller")) {
 			// insert smth here
 		} else {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Invalid Login");
-			alert.setHeaderText("Wrong Credentials!");
-			alert.setContentText("You entered a wrong username or password.");
-			alert.showAndWait();
+			Alert error = GUIComponentFactory.createError("Invalid Login", "Wrong Credentials!",
+					"You entered a wrong username or password.");
+			error.showAndWait();
 		}
 
 	}

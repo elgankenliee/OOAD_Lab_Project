@@ -70,7 +70,7 @@ public class Wishlist {
 
 	public static void initWishlist() {
 		String query = "SELECT * " + "FROM wishlist w JOIN items i ON w.ItemID = i.ItemID " + "WHERE BuyerID = "
-				+ Main.currentUser.getUserID() + ";";
+				+ Main.currentUser.getUserID() + " ORDER BY WishlistID DESC;";
 
 		db.rs = db.execQuery(query);
 		try {

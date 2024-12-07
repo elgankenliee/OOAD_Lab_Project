@@ -1,7 +1,10 @@
 package controller;
 
+import factories.GUIComponentFactory;
+import javafx.scene.control.Alert;
 import model.domain.Item;
 import routes.Route;
+import view.AdminHomePage;
 import view.BuyerHomePage;
 import view.ItemDetailPage;
 
@@ -39,6 +42,34 @@ public class ItemController {
 		} else {
 			return String.format("%.2f", amount);
 		}
+	}
+
+	public static void viewRequestedItem() {
+		AdminHomePage.itemList.clear();
+		Item.viewRequestedItem();
+		Route.redirectAdminHomePage();
+	}
+
+	public static void approveItem(String itemID) {
+		Item.approveItem(itemID);
+		ItemController.viewRequestedItem();
+
+	}
+
+	public static boolean declineItem(String itemID, String declineReason) {
+		if (declineReason.isEmpty()) {
+			Alert error = GUIComponentFactory.createError("Error", "Decline reason can't be empty",
+					"Please input disapproval reason");
+			error.showAndWait();
+			return false;
+		}
+		Item.declineItem(itemID, declineReason);
+		Alert notification = GUIComponentFactory.createNotification("Notification", "Item has been declined",
+				"press OK to proceed");
+		notification.showAndWait();
+		ItemController.viewRequestedItem();
+		return true;
+
 	}
 
 }

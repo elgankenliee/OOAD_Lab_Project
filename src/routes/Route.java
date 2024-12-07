@@ -1,6 +1,7 @@
 package routes;
 
 import model.domain.Item;
+import view.AdminHomePage;
 import view.BuyerHistoryPage;
 import view.BuyerHomePage;
 import view.BuyerWishlistPage;
@@ -34,6 +35,10 @@ public class Route {
 	public static void redirectBuyerWishlistPage(String searchedItem, String placeHolder) {
 		BuyerWishlistPage.loadPage(searchedItem, placeHolder);
 
+	}
+
+	public static void redirectAdminHomePage() {
+		AdminHomePage.loadPage();
 	}
 
 }
