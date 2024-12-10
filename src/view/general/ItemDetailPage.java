@@ -1,4 +1,4 @@
-package view;
+package view.general;
 
 import java.util.ArrayList;
 
@@ -82,8 +82,7 @@ public class ItemDetailPage {
 				GUIComponentFactory.createSrchMsgLbl(item.getItemSize(), Main.themeOrange));
 		HBox itemAuthorContainer = new HBox();
 		itemAuthorContainer.getChildren().addAll(GUIComponentFactory.createSrchMsgLbl("Uploaded by ", "#8a8da1"),
-				GUIComponentFactory.createSrchMsgLbl(UserController.getSellerName(item.getSellerID()),
-						Main.themeOrange));
+				GUIComponentFactory.createSrchMsgLbl(UserController.getUsername(item.getSellerID()), Main.themeOrange));
 		itemAuthorContainer.setTranslateY(20);
 
 		itemDetailContainer.getChildren().addAll(itemCategoryContainer, itemSizeContainer, itemAuthorContainer);
@@ -143,7 +142,6 @@ public class ItemDetailPage {
 		VBox optionBox = new VBox();
 		optionBox.setSpacing(20);
 		optionBox.setPadding(new Insets(15, 15, 15, 15));
-//		optionBox.setStyle("-fx-background-radius: 10px; -fx-background-color : #4d4e61");
 		optionBox.setMinHeight(200);
 		optionBox.setMaxWidth(optionBoxWidth);
 
@@ -178,6 +176,7 @@ public class ItemDetailPage {
 					Alert notification = GUIComponentFactory.createNotification("Notification", "Transaction created!",
 							"Please track your shipping progress regularly");
 					notification.showAndWait();
+					ItemController.browseItem("", Main.defaultPlaceholder);
 				}
 			});
 		});
@@ -258,9 +257,69 @@ public class ItemDetailPage {
 			WishlistController.addWishlist(item.getitemID(), Main.currentUser.getUserID());
 		});
 
-		buttonContainer.getChildren().addAll(buyNowButton, bidButton);
+		Button acceptOfferButton = GUIComponentFactory.createButton("Accept Bid");
+		acceptOfferButton.setMinWidth(optionBoxWidth * 0.45);
+		acceptOfferButton.setTranslateY(23);
+		acceptOfferButton.setOnAction(e -> {
+			ItemController.acceptOffer(item.getitemID());
+		});
 
-		optionBox.getChildren().addAll(selectorLabel, buttonContainer, addToWishlistButton);
+		Button declineOfferButton = GUIComponentFactory.createButton("Decline Bid");
+		declineOfferButton.setMinWidth(optionBoxWidth * 0.45);
+		declineOfferButton.setTranslateY(23);
+		declineOfferButton.setOnAction(e -> {
+
+			Stage declineWindow = new Stage();
+			declineWindow.setTitle("Bid Decline Form");
+
+			// Create the layout
+			VBox layout = new VBox(15);
+			layout.setAlignment(Pos.CENTER);
+			layout.setPadding(new Insets(20));
+			layout.setStyle(
+					"-fx-background-color: #f9f9f9; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10;");
+
+			// Label for instructions
+			Label instructionLabel = new Label("Enter decline reason :");
+			instructionLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+			instructionLabel.setTextFill(Color.web("#333333"));
+
+			TextField reasonField = new TextField();
+			reasonField.setPromptText("Enter decline reason");
+			reasonField.setStyle(
+					"-fx-padding: 8; -fx-border-color: #aaaaaa; -fx-border-radius: 5; -fx-background-radius: 5;");
+
+			// Submit button
+			Button submitReasonButton = GUIComponentFactory.createButton("Submit Reason");
+			submitReasonButton.setOnAction(event -> {
+				boolean isDeclined = ItemController.declineOffer(item, item.getitemID(), reasonField.getText());
+				if (isDeclined) {
+					declineWindow.close();
+				}
+			});
+
+			layout.getChildren().addAll(instructionLabel, reasonField, submitReasonButton);
+
+			Scene scene = new Scene(layout, 350, 250);
+			declineWindow.setScene(scene);
+			declineWindow.initModality(Modality.APPLICATION_MODAL); // Block interaction with other windows
+			declineWindow.show();
+
+		});
+
+		if (Main.currentUser.getUserRole().equalsIgnoreCase("Buyer")) {
+			buttonContainer.getChildren().addAll(buyNowButton, bidButton);
+			optionBox.getChildren().addAll(selectorLabel, buttonContainer, addToWishlistButton);
+		} else {
+
+			if (!ItemController.bidExists(item.getitemID()) || !item.getItemStatus().equalsIgnoreCase("Approved")) {
+				styleInactiveBtn(declineOfferButton);
+				styleInactiveBtn(acceptOfferButton);
+			}
+			selectorLabel.setText("Accept or Decline Bid");
+			buttonContainer.getChildren().addAll(acceptOfferButton, declineOfferButton);
+			optionBox.getChildren().addAll(selectorLabel, buttonContainer);
+		}
 
 		rightContent.getChildren().addAll(decorContainer, optionBox);
 		middleContent.getChildren().addAll(topMiddleContent, bottomMiddleContent);
@@ -269,6 +328,25 @@ public class ItemDetailPage {
 		root.getChildren().addAll(GUIComponentFactory.createNavbar("Search Items in CaLouselF Store"), content);
 
 		Main.switchRoot(root);
+	}
+
+	public static void styleActiveBtn(Button btn) {
+		btn.setStyle("-fx-background-color: " + Main.themeOrange
+				+ "; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;");
+
+		btn.setOnMouseEntered(e -> {
+			btn.setStyle(
+					"-fx-background-color: #C67025; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;");
+		});
+		btn.setOnMouseExited(e -> {
+			btn.setStyle("-fx-background-color: " + Main.themeOrange
+					+ "; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;");
+		});
+	}
+
+	public static void styleInactiveBtn(Button btn) {
+		btn.setStyle("-fx-background-color: grey; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;");
+
 	}
 
 }

@@ -15,8 +15,8 @@ public class UserController {
 
 	private static Connect db = Connect.getInstance();
 
-	public static String getSellerName(String sellerID) {
-		return User.getSellerName(sellerID);
+	public static String getUsername(String sellerID) {
+		return User.getUsername(sellerID);
 	}
 
 	public static boolean uniqueUser(String username) {
@@ -57,7 +57,7 @@ public class UserController {
 		if (currRole.equalsIgnoreCase("customer")) {
 			ItemController.browseItem("", Main.defaultPlaceholder);
 		} else if (currRole.equalsIgnoreCase("seller")) {
-			// insert smth here
+			ItemController.viewItem();
 		} else {
 			Alert error = GUIComponentFactory.createError("Invalid Login", "Wrong Credentials!",
 					"You entered a wrong username or password.");

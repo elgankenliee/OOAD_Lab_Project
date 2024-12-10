@@ -1,4 +1,4 @@
-package view;
+package view.buyer;
 
 import java.util.ArrayList;
 import java.util.Optional;

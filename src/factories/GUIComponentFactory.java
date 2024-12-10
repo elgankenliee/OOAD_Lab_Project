@@ -246,14 +246,10 @@ public class GUIComponentFactory {
 		});
 
 		VBox navbarLogo = createNavbarLogo();
-		navbarLogo.setOnMouseClicked(e -> {
-			ItemController.browseItem("", Main.defaultPlaceholder);
-		});
 
 		HBox leftNavbarContents = new HBox();
 		leftNavbarContents.setSpacing(navbarContentSpacing);
 		leftNavbarContents.setAlignment(Pos.CENTER_LEFT);
-		leftNavbarContents.getChildren().addAll(navbarLogo, searchBar, searchButton);
 		leftNavbarContents.setTranslateX(50);
 
 		HBox rightNavbarContents = new HBox();
@@ -276,6 +272,24 @@ public class GUIComponentFactory {
 			TransactionController.viewHistory(Main.currentUser.getUserID());
 		});
 
+		Button allItemsButton = createNavbarButton("My Uploads");
+		allItemsButton.setMinHeight(searchBarHeight);
+		allItemsButton.setOnAction(e -> {
+			ItemController.viewItem();
+		});
+
+		Button approvedItemsButton = createNavbarButton("My Approved Items");
+		approvedItemsButton.setMinHeight(searchBarHeight);
+		approvedItemsButton.setOnAction(e -> {
+			ItemController.viewAcceptedItem();
+		});
+
+		Button offeredItemsButton = createNavbarButton("Active Bids");
+		offeredItemsButton.setMinHeight(searchBarHeight);
+		offeredItemsButton.setOnAction(e -> {
+			ItemController.viewOfferItem();
+		});
+
 		Button logoutButton = createButton("Log Out");
 		logoutButton.setMinHeight(searchBarHeight);
 		logoutButton.setStyle(
@@ -294,7 +308,21 @@ public class GUIComponentFactory {
 			UserController.logout();
 		});
 
-		rightNavbarContents.getChildren().addAll(divider, wishlistButton, historyButton, logoutButton);
+		if (Main.currentUser.getUserRole().equalsIgnoreCase("buyer")) {
+			leftNavbarContents.getChildren().addAll(navbarLogo, searchBar, searchButton);
+			rightNavbarContents.getChildren().addAll(divider, wishlistButton, historyButton, logoutButton);
+			navbarLogo.setOnMouseClicked(e -> {
+				ItemController.browseItem("", Main.defaultPlaceholder);
+			});
+		} else {
+			leftNavbarContents.getChildren().addAll(navbarLogo);
+			rightNavbarContents.getChildren().addAll(divider, allItemsButton, approvedItemsButton, offeredItemsButton,
+					logoutButton);
+			rightNavbarContents.setTranslateX(20);
+			navbarLogo.setOnMouseClicked(e -> {
+				ItemController.viewItem();
+			});
+		}
 
 		navbar.getChildren().addAll(leftNavbarContents, rightNavbarContents);
 		navbarContainer.getChildren().addAll(navbar);
@@ -338,6 +366,9 @@ public class GUIComponentFactory {
 	public static VBox createNavbarLogo() {
 		Label title = new Label("CaLouselF");
 		Label titleAccent = new Label("Store");
+		if (Main.currentUser.getUserRole().equalsIgnoreCase("seller")) {
+			titleAccent.setText("Seller");
+		}
 		title.setStyle("-fx-text-fill: white	;-fx-font-size:30px; -fx-font-weight:bold; -fx-font-style: italic;");
 		titleAccent.setStyle("-fx-text-fill: " + Main.themeOrange
 				+ ";-fx-font-size:45px; -fx-font-weight:bold; -fx-font-style: italic;");

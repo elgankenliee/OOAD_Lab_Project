@@ -1,5 +1,6 @@
 package model.domain;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import client.Main;
@@ -76,9 +77,18 @@ public class User {
 		this.userRole = userRole;
 	}
 
-	public static String getSellerName(String sellerID) {
-		String query = "SELECT Username FROM Users WHERE UserID = " + sellerID + ";";
-		db.rs = db.execQuery(query);
+	public static String getUsername(String sellerID) {
+		String query = "SELECT Username FROM Users WHERE UserID = ?;";
+		PreparedStatement ps = db.addQuery(query);
+
+		try {
+			ps.setString(1, sellerID);
+			db.rs = ps.executeQuery();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		try {
 			if (db.rs.next()) {
 				return db.rs.getString("Username");
@@ -90,10 +100,12 @@ public class User {
 	}
 
 	public static String login(String username, String password) {
-		String query = "SELECT * FROM Users WHERE username = '" + username + "'";
-		db.rs = db.execQuery(query);
+		String query = "SELECT * FROM Users WHERE username = ?";
 
-		try {
+		try (PreparedStatement ps = db.addQuery(query)) {
+			ps.setString(1, username);
+			db.rs = ps.executeQuery();
+
 			if (db.rs.next()) {
 
 				String role = null;
@@ -126,11 +138,19 @@ public class User {
 	}
 
 	public static void register(String username, String password, String phoneNumber, String address, String role) {
-		String query = String.format(
-				"INSERT INTO Users (Username, Password, PhoneNumber, Address, Role) VALUES ('%s', '%s', '%s', '%s', '%s');",
-				username, password, phoneNumber, address, role);
-		db.execUpdate(query);
+		String query = "INSERT INTO Users (Username, Password, PhoneNumber, Address, Role) VALUES (?, ?, ?, ?, ?)";
 
+		try (PreparedStatement ps = db.addQuery(query)) {
+			ps.setString(1, username);
+			ps.setString(2, password);
+			ps.setString(3, phoneNumber);
+			ps.setString(4, address);
+			ps.setString(5, role);
+
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

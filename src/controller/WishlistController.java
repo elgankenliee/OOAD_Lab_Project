@@ -4,7 +4,7 @@ import factories.GUIComponentFactory;
 import javafx.scene.control.Alert;
 import model.domain.Wishlist;
 import routes.Route;
-import view.BuyerWishlistPage;
+import view.buyer.BuyerWishlistPage;
 
 public class WishlistController {
 

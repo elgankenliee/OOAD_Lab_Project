@@ -1,13 +1,14 @@
 package routes;
 
 import model.domain.Item;
-import view.AdminHomePage;
-import view.BuyerHistoryPage;
-import view.BuyerHomePage;
-import view.BuyerWishlistPage;
-import view.ItemDetailPage;
-import view.LoginPage;
-import view.RegisterPage;
+import view.admin.AdminHomePage;
+import view.buyer.BuyerHistoryPage;
+import view.buyer.BuyerHomePage;
+import view.buyer.BuyerWishlistPage;
+import view.general.ItemDetailPage;
+import view.general.LoginPage;
+import view.general.RegisterPage;
+import view.seller.SellerHomePage;
 
 public class Route {
 
@@ -25,7 +26,6 @@ public class Route {
 
 	public static void redirectBuyerHistoryPage() {
 		BuyerHistoryPage.loadPage();
-
 	}
 
 	public static void redirectItemDetailPage(Item item) {
@@ -39,6 +39,11 @@ public class Route {
 
 	public static void redirectAdminHomePage() {
 		AdminHomePage.loadPage();
+	}
+
+	public static void redirectSellerHomePage() {
+		SellerHomePage.loadPage();
+
 	}
 
 }

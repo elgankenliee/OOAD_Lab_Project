@@ -1,14 +1,13 @@
-package view;
+package view.general;
 
 import client.Main;
 import factories.GUIComponentFactory;
 import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 
-public class LoginPage {
+public class RegisterPage {
 
 	public static void loadPage() {
-
 		VBox titleContainer = GUIComponentFactory.createLogo();
 
 		VBox root = new VBox();
@@ -17,10 +16,9 @@ public class LoginPage {
 
 		root.setBackground(Main.defaultBg);
 
-		root.getChildren().addAll(titleContainer, GUIComponentFactory.createLoginForm());
+		root.getChildren().addAll(titleContainer, GUIComponentFactory.createRegisterForm());
 
 		Main.switchRoot(root);
-
 	}
 
 }
