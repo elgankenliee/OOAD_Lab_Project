@@ -1,5 +1,6 @@
 package model.presentation;
 
+//This class is used for TableView purposes, representing the details of a transaction in a user's purchase history, including the transaction ID, item details (name, category, size, price), and the date of the transaction.
 public class TransactionView {
 
 	private String transactionID;

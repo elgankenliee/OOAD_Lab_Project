@@ -1,7 +1,5 @@
 package controller;
 
-import java.sql.SQLException;
-
 import client.Main;
 import factories.GUIComponentFactory;
 import javafx.scene.control.Alert;
@@ -9,30 +7,16 @@ import javafx.scene.control.Toggle;
 import model.domain.User;
 import routes.Route;
 import util.AESHelper;
-import util.Connect;
 
 public class UserController {
-
-	private static Connect db = Connect.getInstance();
 
 	public static String getUsername(String sellerID) {
 		return User.getUsername(sellerID);
 	}
 
+	// Checks if the given username is unique in the system.
 	public static boolean uniqueUser(String username) {
-
-		String query = "SELECT username FROM Users WHERE username = '" + username + "'";
-		db.rs = db.execQuery(query);
-
-		try {
-			if (db.rs.next()) {
-				return false;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return true;
+		return User.uniqueUser(username);
 	}
 
 	public static void logout() {
@@ -40,6 +24,8 @@ public class UserController {
 		Route.redirectLoginPage();
 	}
 
+	// Handles the login process, validating credentials and redirecting users based
+	// on their role.
 	public static void login(String username, String password) {
 		if (username.equalsIgnoreCase("admin") && password.equalsIgnoreCase("admin")) {
 			ItemController.viewRequestedItem();
@@ -54,9 +40,8 @@ public class UserController {
 		}
 
 		String currRole = User.login(username, password);
-		if (currRole.equalsIgnoreCase("customer")) {
-			ItemController.browseItem("", Main.defaultPlaceholder);
-		} else if (currRole.equalsIgnoreCase("seller")) {
+		if (currRole.equalsIgnoreCase("buyer") || currRole.equalsIgnoreCase("seller")) {
+
 			ItemController.viewItem();
 		} else {
 			Alert error = GUIComponentFactory.createError("Invalid Login", "Wrong Credentials!",
@@ -66,6 +51,7 @@ public class UserController {
 
 	}
 
+	// Checks if the given string contains any special characters.
 	private static boolean isSpecial(String str) {
 
 		return str.contains("!") || str.contains("@") || str.contains("#") || str.contains("$") || str.contains("%")
@@ -85,10 +71,11 @@ public class UserController {
 		return true;
 	}
 
+	// Validates account registration inputs and displays appropriate error messages
+	// for invalid data.
 	public static void checkAccountValidation(String username, String password, String phoneNum, String address,
 			Toggle role, boolean isAgree) {
 
-		System.out.println(role);
 		if (username.isEmpty()) {
 			Alert alert = GUIComponentFactory.createError("Register Failed", "Register Error",
 					"username must be filled");
@@ -149,6 +136,8 @@ public class UserController {
 
 	}
 
+	// Registers a new user and shows a notification confirming successful account
+	// creation.
 	public static void register(String username, String password, String phoneNumber, String address, String role) {
 
 		User.register(username, password, phoneNumber, address, role);

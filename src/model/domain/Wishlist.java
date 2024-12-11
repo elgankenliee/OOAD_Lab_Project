@@ -46,6 +46,9 @@ public class Wishlist {
 		this.buyerID = buyerID;
 	}
 
+	// Checks if the specified item is already in the user's wishlist. Returns
+	// `false` if the item is already in the wishlist, indicating it is not unique.
+	// Otherwise, returns `true` if the item is not in the wishlist.
 	public static boolean uniqueWishlist(String itemID, String userID) {
 		String query = "SELECT * FROM Wishlist WHERE itemID = ? AND BuyerID = ?";
 
@@ -64,6 +67,8 @@ public class Wishlist {
 		return true; // Item doesn't exist in the wishlist
 	}
 
+	// Adds the specified item to the user's wishlist by inserting the itemID and
+	// userID into the Wishlist table.
 	public static void addWishlist(String itemID, String userID) {
 		String query = "INSERT INTO Wishlist (BuyerID, ItemID) VALUES (?, ?)";
 
@@ -77,6 +82,8 @@ public class Wishlist {
 		}
 	}
 
+	// Removes the specified item from the user's wishlist by deleting the
+	// corresponding entry from the Wishlist table.
 	public static void removeWishlist(String itemID, String userID) {
 		String query = "DELETE FROM wishlist WHERE buyerID = ? AND itemID = ?";
 
@@ -90,6 +97,10 @@ public class Wishlist {
 		}
 	}
 
+	// Initializes the wishlist for the current user by querying the `wishlist`
+	// table and joining it with the `items` table to fetch item details where the
+	// item is marked as 'Approved'. The retrieved items are then added to the
+	// `BuyerWishlistPage.itemList`.
 	public static void initWishlist() {
 		String query = "SELECT * FROM wishlist w JOIN items i ON w.ItemID = i.ItemID "
 				+ "WHERE BuyerID = ? AND ItemStatus LIKE 'Approved' ORDER BY WishlistID DESC;";

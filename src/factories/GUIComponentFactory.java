@@ -92,6 +92,8 @@ public class GUIComponentFactory {
 
 		Button registerButton = createButton("Register");
 		registerButton.setMaxWidth(formWidth);
+
+		// triggers the checkAccountValidation method from the UserController class
 		registerButton.setOnAction(
 				e -> UserController.checkAccountValidation(nameField.getText(), passField.getText(), numField.getText(),
 						addressField.getText(), roleToggleGroup.getSelectedToggle(), termsCheckbox.isSelected()));
@@ -102,6 +104,7 @@ public class GUIComponentFactory {
 				linkContainer);
 
 		registerWindow.setTranslateY(-60);
+		// triggers the checkAccountValidation method from the UserController class
 		registerWindow.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				UserController.checkAccountValidation(nameField.getText(), passField.getText(), numField.getText(),
@@ -139,7 +142,6 @@ public class GUIComponentFactory {
 
 		Hyperlink registerLink = new Hyperlink("Here!");
 		registerLink.setTranslateX(-3);
-//		registerLink.setOnAction(e -> Route.redirectRegisterPage(primaryStage));
 
 		registerLink.setOnAction(e -> {
 			Route.redirectRegisterPage();
@@ -150,6 +152,8 @@ public class GUIComponentFactory {
 		Button loginButton = createButton("Login");
 		loginButton.setMaxWidth(formWidth);
 
+		// Triggers the login logic from UserController using the input from nameField
+		// and passField
 		loginButton.setOnAction(e -> {
 			UserController.login(nameField.getText(), passField.getText());
 		});
@@ -159,13 +163,12 @@ public class GUIComponentFactory {
 
 		loginWindow.setTranslateY(-60);
 
+		// Triggers the login logic from UserController when the ENTER key is pressed
 		loginWindow.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				UserController.login(nameField.getText(), passField.getText());
 			}
 		});
-
-		nameField.setText("elgankenlie");
 
 		return loginWindow;
 	}
@@ -219,6 +222,9 @@ public class GUIComponentFactory {
 				"-fx-background-color : #545877; -fx-text-fill : #F3F3F3; -fx-font-weight : bold; -fx-font-size : 14px");
 
 		Button searchButton = createNavbarButton("Search");
+
+		// Triggers the browseItem method from ItemController when the search button is
+		// clicked
 		searchButton.setOnAction(e -> {
 			ItemController.browseItem(searchBar.getText(), searchBar.getText());
 		});
@@ -239,6 +245,8 @@ public class GUIComponentFactory {
 		searchButton.setTranslateX(-1 * navbarContentSpacing - 101);
 		searchButton.setTranslateY(-1);
 
+		// Triggers the browseItem method from ItemController when the Enter key is
+		// pressed while the navbarContainer is focused
 		navbarContainer.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				ItemController.browseItem(searchBar.getText(), searchBar.getText());
@@ -262,30 +270,47 @@ public class GUIComponentFactory {
 
 		Button wishlistButton = createNavbarButton("My Wishlist");
 		wishlistButton.setMinHeight(searchBarHeight);
+
+		// Calls the initWishlist method from WishlistController, passing empty string
+		// and a search prompt as parameters when wishlistButton is clicked
 		wishlistButton.setOnAction(e -> {
 			WishlistController.initWishlist("", "Search Items in CaLouselF Store");
 		});
 
 		Button historyButton = createNavbarButton("History");
 		historyButton.setMinHeight(searchBarHeight);
+
+		// Triggers the viewHistory method from TransactionController to display the
+		// transaction history of the current user when historyButton is clicked
 		historyButton.setOnAction(e -> {
 			TransactionController.viewHistory(Main.currentUser.getUserID());
 		});
 
 		Button allItemsButton = createNavbarButton("My Uploads");
 		allItemsButton.setMinHeight(searchBarHeight);
+
+		// [FOR SELLER ONLY]Triggers the viewItem method from ItemController to display
+		// all items when
+		// allItemsButton is clicked
 		allItemsButton.setOnAction(e -> {
 			ItemController.viewItem();
 		});
 
 		Button approvedItemsButton = createNavbarButton("My Approved Items");
 		approvedItemsButton.setMinHeight(searchBarHeight);
+
+		// [FOR SELLER ONLY] Triggers the viewAcceptedItem method from ItemController to
+		// display approved items for the seller when approvedItemsButton is clicked
 		approvedItemsButton.setOnAction(e -> {
 			ItemController.viewAcceptedItem();
 		});
 
 		Button offeredItemsButton = createNavbarButton("Active Bids");
 		offeredItemsButton.setMinHeight(searchBarHeight);
+
+		// [FOR SELLER ONLY] Triggers the viewOfferItem method from ItemController to
+		// display items that have been offered for sale when offeredItemsButton is
+		// clicked
 		offeredItemsButton.setOnAction(e -> {
 			ItemController.viewOfferItem();
 		});
@@ -421,6 +446,9 @@ public class GUIComponentFactory {
 		itemBox.setBackground(new Background(new BackgroundFill(Color.web(Main.navbarGrey), null, null)));
 		itemBox.setMaxWidth(700);
 		itemBox.setMinHeight(170);
+
+		// Triggers the viewDetail method from ItemController to display detailed
+		// information of the clicked item in itemBox
 		itemBox.setOnMouseClicked(e -> ItemController.viewDetail(item));
 
 		itemBox.setOnMouseEntered(e -> {
@@ -489,6 +517,9 @@ public class GUIComponentFactory {
 		itemBox.setBackground(new Background(new BackgroundFill(Color.web(Main.navbarGrey), null, null)));
 		itemBox.setMaxWidth(710);
 		itemBox.setMinHeight(170);
+
+		// Triggers the viewDetail method from ItemController to display detailed
+		// information of the clicked item in itemBox
 		itemBox.setOnMouseClicked(e -> ItemController.viewDetail(item));
 
 		itemBox.setOnMouseEntered(e -> {
@@ -544,6 +575,10 @@ public class GUIComponentFactory {
 		removeButton.setTranslateX(-20);
 		removeButton.setTranslateY(20);
 
+		// Displays a confirmation dialog before removing the item from the wishlist. If
+		// confirmed, this triggers removeWishlist from WishlistController, then a
+		// notification is shown.
+		// If canceled, the action is aborted and a message is logged.
 		removeButton.setOnAction(e -> {
 			Alert confirmation = createConfirmation("Item Removal Confirmation",
 					"Do you want to remove this item from your wishlist?", "Please confirm your choice.");

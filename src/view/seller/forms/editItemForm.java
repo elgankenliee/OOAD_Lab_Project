@@ -51,6 +51,10 @@ public class editItemForm {
 
 		// Submit button
 		Button submitButton = GUIComponentFactory.createButton("Save Changes");
+		// Sets an action for the submitButton to update an existing item with new
+		// details,
+		// and displays a notification upon successful update while closing the edit
+		// window.
 		submitButton.setOnAction(event -> {
 			boolean updateSuccess = ItemController.editItem(item.getitemID(), nameField.getText(),
 					categoryField.getText(), sizeField.getText(), priceField.getText());

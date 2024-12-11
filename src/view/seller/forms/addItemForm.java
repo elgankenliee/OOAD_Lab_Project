@@ -50,6 +50,10 @@ public class addItemForm {
 
 		// Submit button
 		Button submitButton = GUIComponentFactory.createButton("Upload Item");
+		// Sets an action for the submitButton to upload a new item using the provided
+		// fields,
+		// and displays a notification upon successful upload while closing the upload
+		// window and refreshing the item view.
 		submitButton.setOnAction(event -> {
 			boolean uploadSucess = ItemController.uploadItem(nameField.getText(), categoryField.getText(),
 					sizeField.getText(), priceField.getText());

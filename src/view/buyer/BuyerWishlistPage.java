@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import client.Main;
 import controller.ItemController;
+import controller.TransactionController;
 import controller.WishlistController;
 import factories.GUIComponentFactory;
 import javafx.geometry.Insets;
@@ -52,6 +53,12 @@ public class BuyerWishlistPage {
 
 		VBox itemContainer = new VBox();
 
+		// Checks if the wishlist is empty or not. If empty, it displays a message
+		// saying "Your wishlist is empty!".
+		// If there are items in the wishlist, it displays the total number of items,
+		// calculates the subtotal based on the highest bid of each item,
+		// and then displays the items in the cart with a "buy now" price that is 10
+		// times the highest bid for each item.
 		if (itemList.size() < 1) {
 			cartIsEmpty = true;
 			Label emptywishlistLabel = new Label("Your wishlist is empty!");
@@ -66,6 +73,10 @@ public class BuyerWishlistPage {
 					GUIComponentFactory.createSrchMsgLbl(" products in cart", "#717489"));
 			itemContainer.getChildren().add(resultMsgContainer);
 
+			// Iterates through each item in the itemList, calculates the subtotal by adding
+			// the highest bid of each item,
+			// and adds a visual representation of each item to the itemContainer (using a
+			// method to create the UI for each cart item).
 			for (Item i : itemList) {
 				cartSubtotal += ItemController.getHighestBid(i);
 				itemContainer.getChildren().add(GUIComponentFactory.createCartItemBox(i, root));
@@ -83,6 +94,8 @@ public class BuyerWishlistPage {
 		Label totalLabel = new Label("Total : ");
 
 		Button checkOutButton = GUIComponentFactory.createButton("Checkout Items");
+		// Triggers a confirmation alert, if buyer responds with OK, a new transaction
+		// is created for each items in their wishlist
 		checkOutButton.setOnAction(e -> {
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Checkout Confirmation");
@@ -91,6 +104,12 @@ public class BuyerWishlistPage {
 
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.isPresent() && result.get() == ButtonType.OK) {
+				// iterate through each item in current user's wishlist and create a transaction
+				// for each item
+				for (Item item : itemList) {
+					TransactionController.purchaseItem(Main.currentUser.getUserID(), item.getitemID());
+				}
+
 				Alert registerAlert = new Alert(AlertType.INFORMATION);
 				registerAlert.setTitle("Transaction Information");
 				registerAlert.setHeaderText("Transaction success!");

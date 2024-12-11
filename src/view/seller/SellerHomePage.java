@@ -59,6 +59,9 @@ public class SellerHomePage {
 		HBox buttonContainer = new HBox();
 
 		Button detailButton = GUIComponentFactory.createButton("View Details");
+		// Sets an action for the detailButton to display the details of the selected
+		// item from the table,
+		// or shows an error message if no item is selected.
 		detailButton.setOnAction(e -> {
 			Item selectedItem = table.getSelectionModel().getSelectedItem();
 			if (selectedItem != null) {
@@ -70,6 +73,8 @@ public class SellerHomePage {
 		});
 
 		Button uploadButton = GUIComponentFactory.createButton("Add Item");
+		// Sets an action for the uploadButton to open a window for adding a new item
+		// using the addItemForm.
 		uploadButton.setOnAction(e -> {
 
 			Stage uploadWindow = addItemForm.createAddForm();
@@ -78,10 +83,12 @@ public class SellerHomePage {
 		});
 
 		Button editButton = GUIComponentFactory.createButton("Edit Item");
+		// Sets an action for the editButton to open an edit form for the selected item
+		// from the table,
+		// or displays an error message if no item is selected.
 		editButton.setOnAction(e -> {
 			Item selectedItem = table.getSelectionModel().getSelectedItem();
 			if (selectedItem != null) {
-
 				editItemForm.createEditForm(selectedItem).show();
 
 			} else {
@@ -91,19 +98,25 @@ public class SellerHomePage {
 		});
 
 		Button removeButton = GUIComponentFactory.createButton("Remove Item");
+		// Sets an action for the removeButton to confirm the deletion of the selected
+		// item from the table,
+		// ensuring the item is approved before proceeding, and shows appropriate
+		// notifications and error messages.
 		removeButton.setOnAction(e -> {
 			Item selectedItem = table.getSelectionModel().getSelectedItem();
 			if (selectedItem != null) {
-				GUIComponentFactory.createConfirmation("Confirmation", "Do you want to remove this item?",
-						"Select the option to proceed").showAndWait().ifPresent(response -> {
-							if (response == ButtonType.OK) {
-								ItemController.deleteItem(selectedItem.getitemID());
-								GUIComponentFactory
-										.createNotification("Notification", "Item deleted", "Press OK to proceed")
-										.showAndWait();
-								ItemController.viewItem();
-							}
-						});
+				if (selectedItem.getItemStatus().equalsIgnoreCase("approved")) {
+					GUIComponentFactory.createConfirmation("Confirmation", "Do you want to remove this item?",
+							"Select the option to proceed").showAndWait().ifPresent(response -> {
+								if (response == ButtonType.OK) {
+									ItemController.deleteItem(selectedItem.getitemID());
+									GUIComponentFactory
+											.createNotification("Notification", "Item deleted", "Press OK to proceed")
+											.showAndWait();
+									ItemController.viewItem();
+								}
+							});
+				}
 			} else {
 				GUIComponentFactory.createError("Error", "No item selected", "Please select an item").showAndWait();
 			}
@@ -159,13 +172,23 @@ public class SellerHomePage {
 				String itemStatus = newSelection.getItemStatus();
 				if ("Waiting for approval".equalsIgnoreCase(itemStatus)) {
 					editButton.setDisable(true); // Disable button
+					removeButton.setDisable(true);
 					styleInactiveBtn(editButton);
+					styleInactiveBtn(removeButton);
 				} else {
 					editButton.setDisable(false); // Enable button
+					removeButton.setDisable(false);
 					styleActiveBtn(editButton);
+					styleActiveBtn(removeButton);
 				}
 			} else {
 				editButton.setDisable(true); // Disable button when no item is selected
+				removeButton.setDisable(true);
+				detailButton.setDisable(true);
+				styleInactiveBtn(editButton);
+				styleInactiveBtn(removeButton);
+				styleInactiveBtn(detailButton);
+
 			}
 		});
 	}

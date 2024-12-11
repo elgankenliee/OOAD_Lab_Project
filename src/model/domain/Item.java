@@ -110,6 +110,8 @@ public class Item {
 		this.itemOfferStatus = itemOfferStatus;
 	}
 
+	// Handles item browsing by either displaying all approved items or
+	// filtering by item name/category based on the search input.
 	public static void browseItem(boolean isEmptySearch, String searchedItemName) {
 		String query = null;
 		try {
@@ -155,6 +157,8 @@ public class Item {
 		}
 	}
 
+	// This method retrieves and displays the list of pending bids for a given item,
+	// showing the bidder's username, offer price, and bid date.
 	public static void viewDetail(Item item) {
 
 		String itemID = item.getitemID();
@@ -174,6 +178,8 @@ public class Item {
 		}
 	}
 
+	// This method retrieves the highest pending bid for a given item, or returns
+	// the item's current price if no bid exists.
 	public static int getHighestBid(Item item) {
 		if (bidExists(item.getitemID())) {
 
@@ -192,9 +198,19 @@ public class Item {
 		return (int) Math.round(item.getItemPrice());
 	}
 
+	// This method checks if there is a pending bid for the given item by querying
+	// the offers table.
 	public static boolean bidExists(String itemID) {
-		String query = "SELECT * FROM offers WHERE OfferStatus LIKE 'Pending' AND itemID = " + itemID;
-		db.rs = db.execQuery(query);
+		String query = "SELECT * FROM offers WHERE OfferStatus LIKE 'Pending' AND itemID = ?";
+		PreparedStatement ps = db.addQuery(query);
+		try {
+			ps.setString(1, itemID);
+			db.rs = ps.executeQuery();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		try {
 			if (db.rs.next()) {
 				return true;
@@ -206,6 +222,8 @@ public class Item {
 		return false;
 	}
 
+	// Inserts a new pending bid for the specified item and updates the item status
+	// to 'Waiting for highest bidder'
 	public static void offerPrice(String itemID, int bidPrice) {
 		String query = "INSERT INTO offers (buyerid, itemid, offerprice, offerstatus) VALUES (?, ?, ?, 'Pending')";
 
@@ -217,8 +235,19 @@ public class Item {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
+		query = "UPDATE Items SET ItemOfferStatus = 'Waiting for highest bidder' WHERE ItemID = ?";
+
+		try (PreparedStatement ps = db.addQuery(query)) {
+			ps.setString(1, itemID);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
+	// Fetches and displays all items with 'Waiting for approval' status to be
+	// reviewed by the admin
 	public static void viewRequestedItem() {
 		String query = "SELECT * FROM items WHERE itemStatus LIKE 'Waiting for approval' ORDER BY ItemID DESC";
 		db.rs = db.execQuery(query);
@@ -242,8 +271,10 @@ public class Item {
 		}
 	}
 
+	// Approves the item and sets its offer status to 'Pending', indicating that
+	// there's no active bid yet in this item
 	public static void approveItem(String itemID) {
-		String query = "UPDATE items SET ItemStatus = 'Approved', ItemOfferStatus = 'Waiting for highest bidder' WHERE ItemID = ?";
+		String query = "UPDATE items SET ItemStatus = 'Approved', ItemOfferStatus = 'Pending' WHERE ItemID = ?";
 
 		try (PreparedStatement ps = db.addQuery(query)) {
 			ps.setString(1, itemID);
@@ -253,6 +284,7 @@ public class Item {
 		}
 	}
 
+	// Declines the item, records the reason, and deletes it from the database
 	public static void declineItem(String itemID, String reason) {
 		String query = "UPDATE items SET ItemStatus = 'Declined', ItemOfferStatus = 'Declined', DeclineReason = ? WHERE ItemID = ?";
 
@@ -263,8 +295,18 @@ public class Item {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
+		query = "DELETE FROM items WHERE ItemID = ?";
+
+		try (PreparedStatement ps = db.addQuery(query)) {
+			ps.setString(1, itemID);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
+	// Fetches and displays all items listed by the current seller from the database
 	public static void viewItem() {
 		String query = "SELECT * FROM items WHERE SellerID = ? ORDER BY ItemID DESC";
 
@@ -294,6 +336,8 @@ public class Item {
 		}
 	}
 
+	// Fetches and displays all approved items listed by the current seller from the
+	// database
 	public static void viewAcceptedItem() {
 		String query = "SELECT * FROM items WHERE SellerID = ? AND ItemStatus LIKE ? ORDER BY ItemID DESC";
 
@@ -324,10 +368,18 @@ public class Item {
 		}
 	}
 
+	// Retrieves and displays items that are approved and waiting for the highest
+	// bidder, with at least one offer made
 	public static void viewOfferItem() {
-		String query = "SELECT * FROM items WHERE SellerID = " + Main.currentUser.getUserID()
-				+ " AND ItemStatus LIKE 'Approved' AND ItemOfferStatus LIKE 'Waiting for highest bidder' AND ItemID IN (SELECT ItemID FROM offers) ORDER BY ItemID DESC";
-		db.rs = db.execQuery(query);
+		String query = "SELECT * FROM items WHERE SellerID = ? AND ItemStatus LIKE 'Approved' AND ItemOfferStatus LIKE 'Waiting for highest bidder' AND ItemID IN (SELECT ItemID FROM offers) ORDER BY ItemID DESC";
+		PreparedStatement ps = db.addQuery(query);
+		try {
+			ps.setString(1, Main.currentUser.getUserID());
+			db.rs = ps.executeQuery();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		try {
 			while (db.rs.next()) {
 				String dbItemID = db.rs.getString("ItemID");
@@ -348,6 +400,8 @@ public class Item {
 		}
 	}
 
+	// Updates the details of an item (name, category, size, and price) based on the
+	// provided itemID
 	public static boolean editItem(String itemID, String itemName, String itemCategory, String itemSize,
 			String itemPrice) {
 		String query = "UPDATE items " + "SET itemName = ?, itemCategory = ?, itemSize = ?, itemPrice = ? "
@@ -370,6 +424,8 @@ public class Item {
 		}
 	}
 
+	// Inserts a new item into the database with the provided details and initial
+	// status values
 	public static boolean uploadItem(String itemName, String itemCategory, String itemSize, String itemPrice) {
 		String query = "INSERT INTO items (SellerID, ItemName, ItemSize, ItemPrice, ItemCategory, ItemStatus, ItemOfferStatus) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -393,6 +449,8 @@ public class Item {
 		}
 	}
 
+	// Retrieves the BuyerID of the highest bidder for a given item, if a bid
+	// exists.
 	public static String getHighestBidder(String itemID) {
 		if (bidExists(itemID)) {
 			String query = "SELECT BuyerID FROM Offers WHERE OfferPrice = (SELECT MAX(OfferPrice) FROM Offers WHERE OfferStatus LIKE 'Pending')";
@@ -409,9 +467,10 @@ public class Item {
 		return null;
 	}
 
+	// Accepts the highest bid offer for a given item if a bid exists.
 	public static boolean acceptOffer(String itemID) {
 		if (bidExists(itemID)) {
-			String query = "UPDATE Offers " + "SET OfferStatus = 'Accepted' " + "WHERE OfferPrice = ("
+			String query = "UPDATE Offers SET OfferStatus = 'Accepted' " + "WHERE OfferPrice = ("
 					+ "SELECT MAX(OfferPrice) FROM Offers WHERE ItemID = ?" + ") AND ItemID = ?";
 			try (PreparedStatement ps = db.addQuery(query)) {
 				// Set parameters for the query
@@ -428,6 +487,8 @@ public class Item {
 		return false;
 	}
 
+	// Declines the highest pending bid for an item and updates the item offer
+	// status to 'Pending' if no bids remain.
 	public static boolean declineOffer(String itemID, String reason) {
 		String query = null;
 		if (bidExists(itemID)) {
@@ -458,12 +519,13 @@ public class Item {
 
 	}
 
+	// Deletes an item from the database based on the given item ID.
 	public static boolean deleteItem(String itemID) {
 		String query = "DELETE FROM items WHERE ItemID = ?";
 		PreparedStatement ps = db.addQuery(query);
 		try {
 			ps.setString(1, itemID);
-			ps.executeUpdate(query);
+			ps.executeUpdate();
 			return true;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

@@ -62,6 +62,9 @@ public class AdminHomePage {
 		HBox buttonContainer = new HBox();
 
 		Button approveButton = GUIComponentFactory.createButton("Approve");
+		// Triggers a confirmation dialog before approving the selected item. If
+		// confirmed, the item is approved.
+		// If no item is selected, an error message is shown.
 		approveButton.setOnAction(e -> {
 			Item selectedItem = table.getSelectionModel().getSelectedItem();
 			if (selectedItem != null) {
@@ -80,6 +83,9 @@ public class AdminHomePage {
 		});
 
 		Button declineButton = GUIComponentFactory.createButton("Decline");
+		// Opens a new window to input a reason for declining the selected item. If a
+		// reason is provided and the item is declined, the window closes.
+		// If no item is selected, an error message is displayed.
 		declineButton.setOnAction(e -> {
 			Item selectedItem = table.getSelectionModel().getSelectedItem();
 			if (selectedItem != null) {

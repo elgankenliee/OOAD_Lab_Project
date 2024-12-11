@@ -83,6 +83,8 @@ public class BuyerHomePage {
 		categoryBox.setValue(promptText);
 
 		Button applyFilterButton = GUIComponentFactory.createButton("Apply");
+		// Triggers the browsing of items by category when the filter button is clicked,
+		// using the selected category from the category box.
 		applyFilterButton.setOnAction(e -> {
 			ItemController.browseItem(categoryBox.getValue().getText(), Main.defaultPlaceholder);
 		});

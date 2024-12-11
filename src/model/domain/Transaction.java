@@ -44,6 +44,8 @@ public class Transaction {
 		this.itemID = itemID;
 	}
 
+	// Handles the purchase process by adding a transaction, updating the item's
+	// status, and removing it from the wishlist.
 	public static void purchaseItem(String userID, String itemID) {
 		String query = null;
 		try {
@@ -68,6 +70,7 @@ public class Transaction {
 		}
 	}
 
+	// Fetches and displays the purchase history of a buyer.
 	public static void viewHistory(String userID) {
 
 		BuyerHistoryPage.historyList.clear();

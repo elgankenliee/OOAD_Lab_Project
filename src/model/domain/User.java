@@ -77,6 +77,8 @@ public class User {
 		this.userRole = userRole;
 	}
 
+	// Retrieves the username of a seller based on the seller's UserID. If no
+	// username is found, returns "anonymous".
 	public static String getUsername(String sellerID) {
 		String query = "SELECT Username FROM Users WHERE UserID = ?;";
 		PreparedStatement ps = db.addQuery(query);
@@ -99,6 +101,11 @@ public class User {
 		return "anonymous";
 	}
 
+	// Validates user login by checking if the entered username and encrypted
+	// password match the stored values in the database.
+	// If successful, creates a User object for the current session and returns the
+	// user's role.
+	// If the login fails, returns "invalid".
 	public static String login(String username, String password) {
 		String query = "SELECT * FROM Users WHERE username = ?";
 
@@ -107,8 +114,6 @@ public class User {
 			db.rs = ps.executeQuery();
 
 			if (db.rs.next()) {
-
-				String role = null;
 
 				int userID = db.rs.getInt("UserID");
 				String dbUsername = db.rs.getString("Username");
@@ -120,14 +125,7 @@ public class User {
 				if (dbPassword.equals(AESHelper.encrypt(password, Main.AESencryptionKey))) {
 					Main.currentUser = new User(String.valueOf(userID), dbUsername, dbPassword, userPhone, userAddress,
 							userRole);
-
-					if (userRole.equalsIgnoreCase("seller")) {
-						role = "Seller";
-					} else {
-						role = "Customer";
-					}
-
-					return role;
+					return Main.currentUser.getUserRole();
 				}
 			}
 		} catch (SQLException e) {
@@ -137,6 +135,8 @@ public class User {
 		return "invalid";
 	}
 
+	// Registers a new user by inserting their details (username, password, phone
+	// number, address, and role) into the database.
 	public static void register(String username, String password, String phoneNumber, String address, String role) {
 		String query = "INSERT INTO Users (Username, Password, PhoneNumber, Address, Role) VALUES (?, ?, ?, ?, ?)";
 
@@ -151,6 +151,31 @@ public class User {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	// Checks if the given username already exists in the database. Returns `false`
+	// if the username is found, indicating it is not unique. Otherwise, returns
+	// `true` if the username is unique.
+	public static boolean uniqueUser(String username) {
+		String query = "SELECT username FROM Users WHERE username = ?";
+		PreparedStatement ps = db.addQuery(query);
+		try {
+			ps.setString(1, username);
+			db.rs = ps.executeQuery();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		try {
+			if (db.rs.next()) {
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return true;
 	}
 
 }

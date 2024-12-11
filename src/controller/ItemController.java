@@ -1,5 +1,6 @@
 package controller;
 
+import client.Main;
 import factories.GUIComponentFactory;
 import javafx.scene.control.Alert;
 import model.domain.Item;
@@ -31,6 +32,7 @@ public class ItemController {
 		Item.offerPrice(itemID, bidPrice);
 	}
 
+	// Method to validate if a new bid input price by a Buyer is valid or not
 	public static boolean validBidAmount(Item item, int bid) {
 		return bid > Item.getHighestBid(item) && bid > item.getItemPrice();
 	}
@@ -45,6 +47,7 @@ public class ItemController {
 		}
 	}
 
+	// Retrieve items uploaded by all sellers that are still pending approval
 	public static void viewRequestedItem() {
 		AdminHomePage.itemList.clear();
 		Item.viewRequestedItem();
@@ -54,7 +57,6 @@ public class ItemController {
 	public static void approveItem(String itemID) {
 		Item.approveItem(itemID);
 		ItemController.viewRequestedItem();
-
 	}
 
 	public static boolean declineItem(String itemID, String declineReason) {
@@ -73,10 +75,16 @@ public class ItemController {
 
 	}
 
+	// Displays items based on the current user's role, either for browsing or
+	// managing their inventory.
 	public static void viewItem() {
-		SellerHomePage.itemList.clear();
-		Item.viewItem();
-		Route.redirectSellerHomePage();
+		if (Main.currentUser.getUserRole().equalsIgnoreCase("Buyer")) {
+			browseItem("", Main.defaultPlaceholder);
+		} else if (Main.currentUser.getUserRole().equalsIgnoreCase("Seller")) {
+			SellerHomePage.itemList.clear();
+			Item.viewItem();
+			Route.redirectSellerHomePage();
+		}
 	}
 
 	public static void viewAcceptedItem() {
@@ -128,6 +136,7 @@ public class ItemController {
 				&& price > 0;
 	}
 
+	// Edits an item's details if the new values pass validation.
 	public static boolean editItem(String itemID, String itemName, String itemCategory, String itemSize,
 			String itemPrice) {
 		if (checkItemValidation(itemName, itemCategory, itemSize, itemPrice)) {
@@ -136,6 +145,7 @@ public class ItemController {
 		return false;
 	}
 
+	// Upload an item with its details if the new values pass validation.
 	public static boolean uploadItem(String itemName, String itemCategory, String itemSize, String itemPrice) {
 		if (checkItemValidation(itemName, itemCategory, itemSize, itemPrice)) {
 			return Item.uploadItem(itemName, itemCategory, itemSize, itemPrice);
@@ -143,6 +153,8 @@ public class ItemController {
 		return false;
 	}
 
+	// Accepts the highest bid for an item and completes the transaction if a bid
+	// exists.
 	public static boolean acceptOffer(String itemID) {
 		if (bidExists(itemID)) {
 			String highestBidderID = Item.getHighestBidder(itemID);
@@ -159,6 +171,7 @@ public class ItemController {
 		return false;
 	}
 
+	// Declines the highest bid for an item and provides a reason if a bid exists.
 	public static boolean declineOffer(Item item, String itemID, String reason) {
 
 		if (bidExists(itemID)) {
@@ -175,12 +188,14 @@ public class ItemController {
 		return false;
 	}
 
+	// Checks if there is an active bid for the given item.
 	public static boolean bidExists(String itemID) {
 		return Item.bidExists(itemID);
 	}
 
+	// Deletes an item
 	public static void deleteItem(String itemID) {
-		// TODO Auto-generated method stub
+		Item.deleteItem(itemID);
 
 	}
 

@@ -167,6 +167,8 @@ public class ItemDetailPage {
 		Button buyNowButton = GUIComponentFactory.createButton("Buy Now");
 		buyNowButton.setMinWidth(optionBoxWidth * 0.45);
 		buyNowButton.setTranslateY(23);
+
+		// Sets an action for the buyNowButton to confirm purchase and notify the user.
 		buyNowButton.setOnAction(e -> {
 			Alert confirmation = GUIComponentFactory.createConfirmation("Confirmation", "Buy this item now?",
 					"*You will be charged 10 times the highest bid");
@@ -184,6 +186,8 @@ public class ItemDetailPage {
 		Button bidButton = GUIComponentFactory.createButton("Place Bid");
 		bidButton.setMinWidth(optionBoxWidth * 0.45);
 		bidButton.setTranslateY(23);
+		// Sets an action for the bidButton to open a bid window and handle bid
+		// submissions.
 		bidButton.setOnAction(e -> {
 
 			Stage bidWindow = new Stage();
@@ -253,6 +257,8 @@ public class ItemDetailPage {
 		Button addToWishlistButton = GUIComponentFactory.createButton("Add to wishlist");
 		addToWishlistButton.setMinWidth(optionBoxWidth);
 		addToWishlistButton.setTranslateY(23);
+		// Sets an action for the addToWishlistButton to add the selected item to the
+		// user's wishlist.
 		addToWishlistButton.setOnAction(e -> {
 			WishlistController.addWishlist(item.getitemID(), Main.currentUser.getUserID());
 		});
@@ -260,6 +266,8 @@ public class ItemDetailPage {
 		Button acceptOfferButton = GUIComponentFactory.createButton("Accept Bid");
 		acceptOfferButton.setMinWidth(optionBoxWidth * 0.45);
 		acceptOfferButton.setTranslateY(23);
+		// Sets an action for the acceptOfferButton to accept the current offer for the
+		// specified item.
 		acceptOfferButton.setOnAction(e -> {
 			ItemController.acceptOffer(item.getitemID());
 		});
@@ -267,6 +275,10 @@ public class ItemDetailPage {
 		Button declineOfferButton = GUIComponentFactory.createButton("Decline Bid");
 		declineOfferButton.setMinWidth(optionBoxWidth * 0.45);
 		declineOfferButton.setTranslateY(23);
+		// Sets an action for the declineOfferButton to open a window for the user to
+		// enter a reason for declining an offer.
+		// The entered reason is submitted to the ItemController, which processes the
+		// decline request and closes the window upon successful submission.
 		declineOfferButton.setOnAction(e -> {
 
 			Stage declineWindow = new Stage();
